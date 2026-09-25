@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  autoLaunch = false
+
+# SPA fallback: functions (configured via config.path) take precedence over this
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
