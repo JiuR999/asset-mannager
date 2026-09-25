@@ -4,7 +4,7 @@ import { blobToBase64, compressImage, imageFileName } from '../lib/image'
 import { DEFAULT_CATEGORIES } from '../lib/icons'
 import { useAuth } from './auth'
 import { toast } from './toast'
-import type { Asset, Category, Db } from '../types'
+import type { Asset, Category, Db, GuestUser } from '../types'
 
 function emptyDb(): Db {
   return {
@@ -35,6 +35,8 @@ interface DataState {
   retrySync: () => Promise<void>
   initRepo: () => Promise<void>
   listSpaces: () => Promise<string[]>
+  listUsers: () => Promise<{ repo: GuestUser[]; env: { name: string; code: string }[] }>
+  saveUsers: (users: GuestUser[]) => Promise<void>
   saveAsset: (
     input: Partial<Asset> & {
       name: string
@@ -116,6 +118,11 @@ export const useData = create<DataState>((set, get) => ({
   },
 
   listSpaces: () => api<{ spaces: string[] }>('/api/spaces').then((r) => r.spaces),
+
+  listUsers: () =>
+    api<{ repo: GuestUser[]; env: { name: string; code: string }[] }>('/api/users'),
+
+  saveUsers: (users) => api('/api/users', { method: 'PUT', json: { users } }),
 
   saveAsset: async (input) => {
     const { db, space } = get()

@@ -5,7 +5,8 @@
 - 纯前端 SPA + Netlify Functions 代理，**无需自建服务器**
 - 数据存在主人 GitHub 账号的**私有仓库**里，每位使用者一个独立文件夹，互不可见
 - 主人用 GitHub 登录；女朋友用「访客名 + 访客码」登录，无需 GitHub 账号
-- 支持拍照（前端压缩后入库）、图标选择、分类管理、退役/恢复、统计图表（花费趋势 / 分类占比 / 日均 TOP5 / 退役总结）、JSON 导出备份、PWA 添加到主屏幕
+- 主人可在 App「设置 → 访客管理」直接添加/删除访客（存于数据仓库 `users.json`，无需改环境变量、无需重新部署）
+- 支持拍照（前端压缩后入库）、图标选择、分类管理、退役/恢复、统计图表（花费趋势 / 分类占比 / 日均 TOP5 / 退役总结）、JSON 导出备份、PWA 添加到主屏幕、多套主题（普通/玻璃拟态/瑞士极简/亲自然）与「普通」主题自定义配色
 
 ## 技术栈
 
@@ -59,7 +60,7 @@ git push -u origin main
 | `GITHUB_CLIENT_ID` | 第 2 步的 Client ID | |
 | `GITHUB_CLIENT_SECRET` | 第 2 步的 Client Secret | |
 | `GITHUB_TOKEN` | 第 3 步的 PAT | 访客模式使用；建好仓库后记得回来把它指向 asset-data |
-| `USER_CODES` | `girlfriend:abc123` | 访客码表，逗号分隔多个：`girlfriend:abc123,mom:xyz789` |
+| `USER_CODES` | `girlfriend:abc123` | 访客码表，逗号分隔多个：`girlfriend:abc123,mom:xyz789`（可选；访客也可由主人在 App 内添加） |
 
 前端变量（Vite 构建时读取）再添加：
 

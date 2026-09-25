@@ -10,17 +10,19 @@ import type { Config, Context } from '@netlify/functions'
  *   DELETE /api/image   删除图片（best-effort）
  *   POST   /api/init    主人首次使用：自动创建私有数据仓库
  *   GET    /api/spaces  列出 data/ 下的空间（文件夹）
+ *   GET    /api/users   列出访客（仓库 users.json + 环境变量 USER_CODES）
+ *   PUT    /api/users   保存访客（主人可在 App 内直接添加/删除，无需重新部署）
  *
  * 认证：
  *   Authorization: Bearer <github_token>        → 主人（GitHub OAuth 登录）
- *   Authorization: Bearer vc:<名字>:<访客码>     → 访客（USER_CODES 环境变量校验）
+ *   Authorization: Bearer vc:<名字>:<访客码>     → 访客（USER_CODES 环境变量 或 仓库 users.json 校验）
  *
  * 所需环境变量：
  *   DATA_REPO             数据仓库，如 "yourname/asset-data"
  *   GITHUB_CLIENT_ID      OAuth App Client ID
  *   GITHUB_CLIENT_SECRET  OAuth App Client Secret
  *   GITHUB_TOKEN          fine-grained PAT（访客模式使用，仅需 DATA_REPO 的 Contents 读写）
- *   USER_CODES            访客码表，如 "girlfriend:abc123,bob:xyz"
+ *   USER_CODES            访客码表（可选），如 "girlfriend:abc123,bob:xyz"；亦可在 App 内由主人维护 users.json
  */
 
 const GH = 'https://api.github.com'
@@ -40,6 +42,11 @@ interface Db {
   updatedAt: string
   categories: Category[]
   assets: Asset[]
+}
+interface UserEntry {
+  name: string
+  code: string
+  label?: string
 }
 
 const validUser = (u: string | null | undefined): boolean => !!u && /^[a-zA-Z0-9_-]{1,32}$/.test(u)
@@ -61,7 +68,7 @@ interface Auth {
   user?: string
 }
 
-function parseAuth(req: Request): { auth?: Auth; error?: string } {
+async function parseAuth(req: Request): Promise<{ auth?: Auth; error?: string }> {
   const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '')
   if (!token) return { error: '未登录' }
 
@@ -70,16 +77,29 @@ function parseAuth(req: Request): { auth?: Auth; error?: string } {
     const i = rest.indexOf(':')
     const name = i > 0 ? rest.slice(0, i) : ''
     const code = i > 0 ? rest.slice(i + 1) : ''
+    if (!name) return { error: '访客名或访客码错误' }
+
+    const serverToken = env('GITHUB_TOKEN')
+    if (!serverToken) return { error: '服务端未配置 GITHUB_TOKEN，请联系主人完成设置' }
+
+    // 1) 环境变量 USER_CODES
     const map = new Map<string, string>()
     for (const pair of (env('USER_CODES') ?? '').split(',')) {
       const p = pair.indexOf(':')
       if (p > 0) map.set(pair.slice(0, p).trim(), pair.slice(p + 1).trim())
     }
-    const expected = map.get(name)
-    if (!name || !expected || expected !== code) return { error: '访客名或访客码错误' }
-    const serverToken = env('GITHUB_TOKEN')
-    if (!serverToken) return { error: '服务端未配置 GITHUB_TOKEN，请联系主人完成设置' }
-    return { auth: { token: serverToken, mode: 'visitor', user: name } }
+    if (map.get(name) === code) {
+      return { auth: { token: serverToken, mode: 'visitor', user: name } }
+    }
+
+    // 2) 仓库 users.json（主人可在 App 内直接维护，无需重新部署）
+    if (repoName()) {
+      const users = await readUsers(serverToken)
+      if (users.some((u) => u.name === name && u.code === code)) {
+        return { auth: { token: serverToken, mode: 'visitor', user: name } }
+      }
+    }
+    return { error: '访客名或访客码错误' }
   }
 
   return { auth: { token, mode: 'owner' } }
@@ -303,12 +323,76 @@ async function listSpaces(token: string): Promise<Response> {
   return json({ spaces: spaces.filter(Boolean) })
 }
 
+async function readUsers(token: string): Promise<UserEntry[]> {
+  const r = await gh(token, `/repos/${repoName()}/contents/users.json`)
+  if (!r.ok) return []
+  const j = (await r.json().catch(() => null)) as { content?: string } | null
+  if (!j?.content) return []
+  try {
+    const parsed = JSON.parse(b64decode(j.content)) as { users?: UserEntry[] }
+    return Array.isArray(parsed?.users) ? parsed.users : []
+  } catch {
+    return []
+  }
+}
+
+async function writeUsers(token: string, users: UserEntry[], sha: string | null): Promise<Response> {
+  const payload: Record<string, unknown> = {
+    message: 'chore(users): update',
+    content: b64encode(JSON.stringify({ version: 1, users }, null, 2)),
+  }
+  if (sha) payload.sha = sha
+  return gh(token, `/repos/${repoName()}/contents/users.json`, { method: 'PUT', body: JSON.stringify(payload) })
+}
+
+async function listUsers(token: string): Promise<Response> {
+  const envUsers: { name: string; code: string }[] = []
+  for (const pair of (env('USER_CODES') ?? '').split(',')) {
+    const p = pair.indexOf(':')
+    if (p > 0) envUsers.push({ name: pair.slice(0, p).trim(), code: pair.slice(p + 1).trim() })
+  }
+  return json({ repo: await readUsers(token), env: envUsers })
+}
+
+async function saveUsers(token: string, req: Request): Promise<Response> {
+  const body = (await req.json().catch(() => null)) as { users?: UserEntry[] } | null
+  if (!Array.isArray(body?.users)) return json({ error: '参数错误' }, 400)
+
+  const clean: UserEntry[] = []
+  for (const u of body.users) {
+    const name = typeof u.name === 'string' ? u.name.trim() : ''
+    const code = typeof u.code === 'string' ? u.code.trim() : ''
+    const label = typeof u.label === 'string' ? u.label.trim().slice(0, 24) : ''
+    if (!/^[a-zA-Z0-9_-]{1,32}$/.test(name)) return json({ error: `访客名格式错误：${name || '(空)'}` }, 400)
+    if (!code || code.length > 64) return json({ error: `访客码无效：${name}` }, 400)
+    clean.push({ name, code, ...(label ? { label } : {}) })
+  }
+  if (new Set(clean.map((u) => u.name)).size !== clean.length) return json({ error: '访客名重复' }, 400)
+
+  const readSha = async (): Promise<string | null> => {
+    const r = await gh(token, `/repos/${repoName()}/contents/users.json`)
+    if (r.ok) {
+      const j = (await r.json()) as { sha?: string }
+      return j.sha ?? null
+    }
+    return null
+  }
+
+  let r = await writeUsers(token, clean, await readSha())
+  if (r.status === 422 || r.status === 409) {
+    r = await writeUsers(token, clean, await readSha())
+  }
+  if (r.ok) return json({ repo: clean })
+  const t = await r.text()
+  return json({ error: `保存失败 (${r.status}): ${t.slice(0, 200)}` }, 502)
+}
+
 export default async (req: Request, _ctx: Context): Promise<Response> => {
   const { pathname } = new URL(req.url)
   try {
     if (req.method === 'POST' && pathname === '/api/auth') return await handleAuth(req)
 
-    const { auth, error } = parseAuth(req)
+    const { auth, error } = await parseAuth(req)
     if (!auth) return json({ error: error ?? '未登录' }, 401)
     if (!repoName()) return json({ error: '服务端未配置 DATA_REPO' }, 500)
 
@@ -338,6 +422,13 @@ export default async (req: Request, _ctx: Context): Promise<Response> => {
     }
 
     if (pathname === '/api/spaces' && req.method === 'GET') return await listSpaces(auth.token)
+
+    if (pathname === '/api/users') {
+      if (auth.mode !== 'owner') return json({ error: '仅主人可管理访客' }, 403)
+      if (req.method === 'GET') return await listUsers(auth.token)
+      if (req.method === 'PUT') return await saveUsers(auth.token, req)
+      return json({ error: 'Method Not Allowed' }, 405)
+    }
 
     return json({ error: 'Not Found' }, 404)
   } catch (e) {

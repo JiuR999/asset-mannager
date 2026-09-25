@@ -36,3 +36,9 @@ export type Identity = {
   /** GitHub access token 或 "vc:<name>:<code>" 访客凭证 */
   token: string
 }
+
+export interface GuestUser {
+  name: string
+  code: string
+  label?: string
+}

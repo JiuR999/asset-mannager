@@ -4,6 +4,7 @@ import { LoaderCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from './store/auth'
 import { useData } from './store/data'
 import { useTheme, type ThemeId } from './store/theme'
+import { deriveAccent } from './lib/color'
 import { toast } from './store/toast'
 import type { Identity } from './types'
 import Toasts from './components/Toasts'
@@ -23,14 +24,31 @@ const THEME_META: Record<ThemeId, string> = {
   biophilic: '#3f9d78',
 }
 
+const ACCENT_VARS = ['--accent', '--accent-2', '--accent-soft', '--accent-ink', '--hero-from', '--hero-to']
+
 export default function App() {
   const theme = useTheme((s) => s.theme)
+  const customAccent = useTheme((s) => s.customAccent)
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme
+    const root = document.documentElement
+    root.dataset.theme = theme
     const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', THEME_META[theme] ?? THEME_META.normal)
-  }, [theme])
+
+    if (theme === 'normal' && customAccent) {
+      const p = deriveAccent(customAccent)
+      root.style.setProperty('--accent', p.accent)
+      root.style.setProperty('--accent-2', p.accent2)
+      root.style.setProperty('--accent-soft', p.accentSoft)
+      root.style.setProperty('--accent-ink', p.accentInk)
+      root.style.setProperty('--hero-from', p.heroFrom)
+      root.style.setProperty('--hero-to', p.heroTo)
+      meta?.setAttribute('content', p.accent)
+    } else {
+      ACCENT_VARS.forEach((v) => root.style.removeProperty(v))
+      meta?.setAttribute('content', THEME_META[theme] ?? THEME_META.normal)
+    }
+  }, [theme, customAccent])
 
   return (
     <BrowserRouter>

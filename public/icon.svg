@@ -4,13 +4,10 @@
       <stop offset="0" stop-color="#38bdf8"/>
       <stop offset="1" stop-color="#0284c7"/>
     </linearGradient>
-    <radialGradient id="fruit" cx="0.35" cy="0.28" r="1">
-      <stop offset="0" stop-color="#fef3c7"/>
-      <stop offset="1" stop-color="#fbbf24"/>
-    </radialGradient>
   </defs>
   <rect width="128" height="128" rx="28" fill="url(#bg)"/>
-  <path d="M64 42c-1-9-10-13-19-10-1 1-4 3-4 5 1 6 8 9 23 5z" fill="#65a30d"/>
-  <circle cx="64" cy="66" r="37" fill="url(#fruit)"/>
-  <circle cx="80" cy="55" r="8" fill="#ffffff" opacity="0.55"/>
+  <ellipse cx="48" cy="31" rx="11" ry="8" fill="#65a30d"/>
+  <circle cx="64" cy="66" r="38" fill="#fbbf24"/>
+  <ellipse cx="64" cy="54" rx="23" ry="17" fill="#fef3c7"/>
+  <ellipse cx="86" cy="57" rx="9" ry="9" fill="#ffffff" opacity="0.6"/>
 </svg>
