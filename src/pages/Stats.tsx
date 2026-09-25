@@ -168,7 +168,7 @@ export default function Stats() {
           <div className="flex items-center">
             <ResponsiveContainer width="45%" height={180}>
               <PieChart>
-                <Pie data={byCategory} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="92%" paddingAngle={2} strokeWidth={0}>
+                <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius="92%" paddingAngle={2} stroke="var(--surface)" strokeWidth={2}>
                   {byCategory.map((_, i) => (
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                   ))}

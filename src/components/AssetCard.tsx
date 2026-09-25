@@ -11,7 +11,7 @@ export default function AssetCard({ asset }: { asset: Asset }) {
   return (
     <Link
       to={`/asset/${asset.id}`}
-      className="flex items-center gap-3 rounded-2xl bg-surface p-3 shadow-sm transition active:scale-[0.98]"
+      className="flex items-center gap-3 rounded-2xl bg-surface p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/5 active:scale-[0.98]"
     >
       <Thumb asset={asset} className="size-12" />
       <div className="min-w-0 flex-1">
