@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import { LoaderCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from './store/auth'
 import { useData } from './store/data'
+import { useTheme, type ThemeId } from './store/theme'
 import { toast } from './store/toast'
 import type { Identity } from './types'
 import Toasts from './components/Toasts'
@@ -15,7 +16,22 @@ import Settings from './pages/Settings'
 
 const Stats = lazy(() => import('./pages/Stats'))
 
+const THEME_META: Record<ThemeId, string> = {
+  normal: '#0ea5e9',
+  glass: '#6366f1',
+  swiss: '#0f172a',
+  biophilic: '#3f9d78',
+}
+
 export default function App() {
+  const theme = useTheme((s) => s.theme)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (meta) meta.setAttribute('content', THEME_META[theme] ?? THEME_META.normal)
+  }, [theme])
+
   return (
     <BrowserRouter>
       <Root />
@@ -47,7 +63,7 @@ function Shell({ identity }: { identity: Identity }) {
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-dvh items-center justify-center text-rose-400">
+      <div className="flex min-h-dvh items-center justify-center text-accent">
         <LoaderCircle size={30} className="animate-spin" />
       </div>
     )
@@ -56,8 +72,8 @@ function Shell({ identity }: { identity: Identity }) {
   if (status === 'error') {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
-        <p className="text-sm text-neutral-500">{error ?? '加载失败'}</p>
-        <button onClick={() => load(identity.name)} className="flex items-center gap-1.5 rounded-full bg-rose-500 px-4 py-2 text-sm text-white">
+        <p className="text-sm text-ink-soft">{error ?? '加载失败'}</p>
+        <button onClick={() => load(identity.name)} className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm text-white">
           <RefreshCw size={14} /> 重试
         </button>
       </div>
@@ -67,7 +83,7 @@ function Shell({ identity }: { identity: Identity }) {
   if (!repoReady) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
-        <p className="text-sm leading-relaxed text-neutral-500">
+        <p className="text-sm leading-relaxed text-ink-soft">
           {isOwner ? (
             <>
               数据仓库还不存在。
@@ -85,7 +101,7 @@ function Shell({ identity }: { identity: Identity }) {
         {isOwner && (
           <button
             onClick={() => initRepo().catch((e) => toast(e instanceof Error ? e.message : '初始化失败', 'error'))}
-            className="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-medium text-white"
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white"
           >
             初始化数据仓库
           </button>
@@ -117,7 +133,7 @@ function Shell({ identity }: { identity: Identity }) {
 
 function FullSpinner() {
   return (
-    <div className="flex min-h-dvh items-center justify-center text-rose-400">
+    <div className="flex min-h-dvh items-center justify-center text-accent">
       <LoaderCircle size={30} className="animate-spin" />
     </div>
   )

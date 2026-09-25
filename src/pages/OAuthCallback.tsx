@@ -36,15 +36,15 @@ export default function OAuthCallback() {
     <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
       {error ? (
         <>
-          <p className="text-sm text-rose-600">{error}</p>
-          <Link to="/" className="text-sm text-neutral-500 underline">
+          <p className="text-sm text-danger">{error}</p>
+          <Link to="/" className="text-sm text-ink-soft underline">
             返回登录
           </Link>
         </>
       ) : (
         <>
-          <LoaderCircle size={28} className="animate-spin text-rose-500" />
-          <p className="text-sm text-neutral-500">正在登录…</p>
+          <LoaderCircle size={28} className="animate-spin text-accent" />
+          <p className="text-sm text-ink-soft">正在登录…</p>
         </>
       )}
     </div>

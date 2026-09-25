@@ -18,12 +18,12 @@ export default function IconPicker({ value, onChange }: Props) {
             type="button"
             onClick={() => onChange(key)}
             className={`relative flex aspect-square items-center justify-center rounded-xl border transition ${
-              selected ? 'border-rose-500 bg-rose-50 text-rose-600' : 'border-neutral-200 bg-white text-neutral-500'
+              selected ? 'border-accent bg-accent-soft text-accent-ink' : 'border-line bg-surface text-ink-soft'
             }`}
           >
             <Icon size={20} />
             {selected && (
-              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-rose-500 text-white">
+              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-accent text-white">
                 <Check size={10} strokeWidth={3} />
               </span>
             )}

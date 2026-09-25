@@ -17,7 +17,7 @@ export default function BottomNav() {
       to={to}
       className={({ isActive }) =>
         `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] ${
-          isActive ? 'text-rose-600' : 'text-neutral-400'
+          isActive ? 'text-accent-ink' : 'text-ink-faint'
         }`
       }
     >
@@ -27,16 +27,16 @@ export default function BottomNav() {
   )
 
   return (
-    <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-neutral-200 bg-white/95 backdrop-blur">
+    <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-line bg-surface/95 backdrop-blur">
       {tabs.map((t) => item(t.to, t.icon, t.label))}
       <button
         onClick={() => {
           openForm(null)
           navigate('/')
         }}
-        className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] text-neutral-400"
+        className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] text-ink-faint"
       >
-        <span className="flex size-9 items-center justify-center rounded-full bg-rose-500 text-white shadow-md shadow-rose-200">
+        <span className="flex size-9 items-center justify-center rounded-full bg-accent text-white shadow-md shadow-black/10">
           <Plus size={22} strokeWidth={2.5} />
         </span>
         <span className="-mt-0.5">添加</span>

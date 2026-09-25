@@ -10,7 +10,7 @@ export default function Toasts() {
         <div
           key={t.id}
           className={`pointer-events-auto flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm shadow-lg ${
-            t.type === 'error' ? 'bg-rose-600 text-white' : 'bg-neutral-900/90 text-white'
+            t.type === 'error' ? 'bg-danger text-white' : 'bg-ink/90 text-white'
           }`}
         >
           {t.type === 'error' && <CircleAlert size={16} />}

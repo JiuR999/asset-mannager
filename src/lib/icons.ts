@@ -100,22 +100,18 @@ export function iconComp(key: string | null | undefined): LucideIcon {
   return (key && ICONS[key]) || ICONS.other
 }
 
-/** 分类头像配色（按 id 稳定取色） */
+/** 分类头像配色（按 id 稳定取色，冷色调） */
 const COLOR_CLASSES = [
-  'bg-rose-100 text-rose-600',
-  'bg-orange-100 text-orange-600',
-  'bg-amber-100 text-amber-600',
-  'bg-lime-100 text-lime-600',
-  'bg-emerald-100 text-emerald-600',
-  'bg-teal-100 text-teal-600',
-  'bg-cyan-100 text-cyan-600',
   'bg-sky-100 text-sky-600',
+  'bg-cyan-100 text-cyan-600',
+  'bg-teal-100 text-teal-600',
+  'bg-emerald-100 text-emerald-600',
+  'bg-green-100 text-green-600',
   'bg-blue-100 text-blue-600',
   'bg-indigo-100 text-indigo-600',
   'bg-violet-100 text-violet-600',
   'bg-purple-100 text-purple-600',
-  'bg-fuchsia-100 text-fuchsia-600',
-  'bg-pink-100 text-pink-600',
+  'bg-slate-100 text-slate-600',
 ]
 
 export function categoryColor(id: string): string {
@@ -124,22 +120,22 @@ export function categoryColor(id: string): string {
   return COLOR_CLASSES[h % COLOR_CLASSES.length]
 }
 
-/** 图表配色（分类占比用） */
+/** 图表配色（分类占比用，冷色调） */
 export const CHART_COLORS = [
-  '#f43f5e',
-  '#8b5cf6',
-  '#06b6d4',
-  '#10b981',
-  '#f59e0b',
-  '#6366f1',
-  '#ef4444',
-  '#14b8a6',
-  '#ec4899',
-  '#84cc16',
-  '#3b82f6',
-  '#a855f7',
-  '#f97316',
   '#0ea5e9',
+  '#06b6d4',
+  '#14b8a6',
+  '#10b981',
+  '#6366f1',
+  '#3b82f6',
+  '#8b5cf6',
+  '#2563eb',
+  '#2dd4bf',
+  '#a5b4fc',
+  '#22c55e',
+  '#7dd3fc',
+  '#64748b',
+  '#818cf8',
 ]
 
 export const DEFAULT_CATEGORIES: Category[] = [

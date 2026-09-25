@@ -43,17 +43,17 @@ export default function CategoryEditor({ category, onClose, onSaved }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-5 sm:rounded-3xl"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-surface p-5 sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent-ink">
               <Icon size={18} />
             </span>
             <h3 className="text-base font-semibold">{category ? '编辑分类' : '新建分类'}</h3>
           </div>
-          <button onClick={onClose} className="rounded-full p-1.5 text-neutral-400 hover:bg-neutral-100">
+          <button onClick={onClose} className="rounded-full p-1.5 text-ink-faint hover:bg-surface-2">
             <X size={18} />
           </button>
         </div>
@@ -63,7 +63,7 @@ export default function CategoryEditor({ category, onClose, onSaved }: Props) {
           onChange={(e) => setName(e.target.value)}
           placeholder="分类名称，如：首饰"
           maxLength={10}
-          className="mb-4 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-rose-400"
+          className="mb-4 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
         />
 
         <div className="mb-5 max-h-64 overflow-y-auto">
@@ -73,7 +73,7 @@ export default function CategoryEditor({ category, onClose, onSaved }: Props) {
         <button
           onClick={submit}
           disabled={!name.trim() || saving}
-          className="w-full rounded-xl bg-rose-500 py-3 text-sm font-medium text-white disabled:opacity-40"
+          className="w-full rounded-xl bg-accent py-3 text-sm font-medium text-white disabled:opacity-40"
         >
           {saving ? '保存中…' : '保存'}
         </button>

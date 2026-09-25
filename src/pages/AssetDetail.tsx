@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { ArchiveRestore, CalendarDays, Pencil } from 'lucide-react'
-import { Link, Navigate, useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import { useData } from '../store/data'
 import { useUi } from '../store/ui'
 import { toast } from '../store/toast'
 import { activeDays, dailyCost, fmtDaily, fmtMoney, todayStr } from '../lib/cost'
 import { categoryColor, iconComp } from '../lib/icons'
 import Thumb from '../components/Thumb'
+import FloatingBack from '../components/FloatingBack'
 
 export default function AssetDetail() {
   const { id } = useParams()
@@ -46,13 +47,11 @@ export default function AssetDetail() {
 
   return (
     <div className="mx-auto min-h-dvh max-w-2xl px-4 pb-16 pt-safe">
-      <header className="flex items-center justify-between pb-4 pt-4">
-        <Link to="/" className="rounded-full p-2 text-neutral-500 hover:bg-neutral-100">
-          ←
-        </Link>
+      <FloatingBack />
+      <header className="flex items-center justify-end pb-4 pt-4">
         <button
           onClick={() => openForm(asset.id)}
-          className="flex items-center gap-1 rounded-full bg-neutral-100 px-3 py-1.5 text-xs text-neutral-600"
+          className="flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1.5 text-xs text-ink-soft"
         >
           <Pencil size={13} /> 编辑
         </button>
@@ -69,8 +68,8 @@ export default function AssetDetail() {
 
       <div className="mt-4 flex items-center gap-2">
         <h1 className="text-xl font-bold">{asset.name}</h1>
-        {retired && <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-400">已退役</span>}
-        {cat && <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[11px] text-rose-500">{cat.name}</span>}
+        {retired && <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-faint">已退役</span>}
+        {cat && <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] text-accent-ink">{cat.name}</span>}
       </div>
 
       {/* 核心数字 */}
@@ -80,22 +79,22 @@ export default function AssetDetail() {
         <Stat label="金额" value={fmtMoney(asset.price)} />
       </div>
 
-      <div className="mt-3 flex items-center gap-1.5 text-xs text-neutral-400">
+      <div className="mt-3 flex items-center gap-1.5 text-xs text-ink-faint">
         <CalendarDays size={13} />
         购买于 {asset.purchaseDate}
         {retired && ` · 退役于 ${asset.retiredAt}`}
       </div>
 
       {retired && (
-        <div className="mt-4 rounded-2xl bg-neutral-100 p-4 text-sm text-neutral-500">
-          这件资产陪伴了 <span className="font-semibold text-neutral-800">{days}</span> 天，
-          总价值 <span className="font-semibold text-neutral-800">{fmtMoney(asset.price)}</span>，
-          折合每天 <span className="font-semibold text-neutral-800">{fmtDaily(dailyCost(asset))}</span>。
+        <div className="mt-4 rounded-2xl bg-surface-2 p-4 text-sm text-ink-soft">
+          这件资产陪伴了 <span className="font-semibold text-ink">{days}</span> 天，
+          总价值 <span className="font-semibold text-ink">{fmtMoney(asset.price)}</span>，
+          折合每天 <span className="font-semibold text-ink">{fmtDaily(dailyCost(asset))}</span>。
         </div>
       )}
 
       {asset.note && (
-        <div className="mt-4 rounded-2xl bg-white p-4 text-sm text-neutral-600 shadow-sm shadow-neutral-200/60">
+        <div className="mt-4 rounded-2xl bg-surface p-4 text-sm text-ink-soft shadow-sm">
           {asset.note}
         </div>
       )}
@@ -105,7 +104,7 @@ export default function AssetDetail() {
         {retired ? (
           <button
             onClick={restore}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-medium text-neutral-700"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-medium text-ink"
           >
             <ArchiveRestore size={16} /> 恢复在用
           </button>
@@ -115,7 +114,7 @@ export default function AssetDetail() {
               setRetireDate(todayStr())
               setRetiring(true)
             }}
-            className="w-full rounded-xl border border-neutral-200 bg-white py-3 text-sm font-medium text-neutral-700"
+            className="w-full rounded-xl border border-line bg-surface py-3 text-sm font-medium text-ink"
           >
             已出坑？标记退役
           </button>
@@ -125,20 +124,20 @@ export default function AssetDetail() {
       {/* 退役弹层 */}
       {retiring && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setRetiring(false)}>
-          <div className="w-full max-w-md rounded-t-3xl bg-white p-5 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-t-3xl bg-surface p-5 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="mb-1 text-base font-semibold">标记退役</h3>
-            <p className="mb-4 text-xs text-neutral-400">选择处置日期（卖出/送人/报废），之后不再计入每日成本。</p>
+            <p className="mb-4 text-xs text-ink-faint">选择处置日期（卖出/送人/报废），之后不再计入每日成本。</p>
             <input
               value={retireDate}
               onChange={(e) => setRetireDate(e.target.value)}
               type="date"
-              className="mb-4 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-rose-400"
+              className="mb-4 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
             />
             <div className="flex gap-2">
-              <button onClick={() => setRetiring(false)} className="flex-1 rounded-xl bg-neutral-100 py-3 text-sm text-neutral-600">
+              <button onClick={() => setRetiring(false)} className="flex-1 rounded-xl bg-surface-2 py-3 text-sm text-ink-soft">
                 取消
               </button>
-              <button onClick={retire} className="flex-1 rounded-xl bg-rose-500 py-3 text-sm font-medium text-white">
+              <button onClick={retire} className="flex-1 rounded-xl bg-accent py-3 text-sm font-medium text-white">
                 确认退役
               </button>
             </div>
@@ -151,9 +150,9 @@ export default function AssetDetail() {
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl p-3 ${accent ? 'bg-rose-50' : 'bg-white shadow-sm shadow-neutral-200/60'}`}>
-      <div className={`text-lg font-bold ${accent ? 'text-rose-600' : 'text-neutral-800'}`}>{value}</div>
-      <div className="mt-0.5 text-[11px] text-neutral-400">{label}</div>
+    <div className={`rounded-2xl p-3 ${accent ? 'bg-accent-soft' : 'bg-surface shadow-sm'}`}>
+      <div className={`text-lg font-bold ${accent ? 'text-accent-ink' : 'text-ink'}`}>{value}</div>
+      <div className="mt-0.5 text-[11px] text-ink-faint">{label}</div>
     </div>
   )
 }

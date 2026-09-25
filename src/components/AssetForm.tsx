@@ -111,12 +111,12 @@ export default function AssetForm() {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={closeForm}>
       <div
-        className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-3xl bg-white sm:rounded-3xl"
+        className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-3xl bg-surface sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 pt-4">
           <h3 className="text-base font-semibold">{editing ? '编辑资产' : '添加资产'}</h3>
-          <button onClick={closeForm} className="rounded-full p-1.5 text-neutral-400 hover:bg-neutral-100">
+          <button onClick={closeForm} className="rounded-full p-1.5 text-ink-faint hover:bg-surface-2">
             <X size={18} />
           </button>
         </div>
@@ -138,7 +138,7 @@ export default function AssetForm() {
                     setPhoto(null)
                     setPhotoFile(null)
                   }}
-                  className="absolute -right-1.5 -top-1.5 flex size-6 items-center justify-center rounded-full bg-neutral-900/80 text-white"
+                  className="absolute -right-1.5 -top-1.5 flex size-6 items-center justify-center rounded-full bg-ink/80 text-white"
                 >
                   <X size={12} />
                 </button>
@@ -147,17 +147,17 @@ export default function AssetForm() {
             <div className="flex flex-col justify-center gap-2">
               <button
                 onClick={() => cameraRef.current?.click()}
-                className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700"
+                className="flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink-soft"
               >
                 <Camera size={14} /> 拍照
               </button>
               <button
                 onClick={() => albumRef.current?.click()}
-                className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700"
+                className="flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink-soft"
               >
                 <ImagePlus size={14} /> 从相册选择
               </button>
-              <span className="text-[11px] text-neutral-400">不拍照也可用左侧图标</span>
+              <span className="text-[11px] text-ink-faint">不拍照也可用左侧图标</span>
             </div>
             <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => pickPhoto(e.target.files?.[0])} />
             <input ref={albumRef} type="file" accept="image/*" hidden onChange={(e) => pickPhoto(e.target.files?.[0])} />
@@ -165,20 +165,20 @@ export default function AssetForm() {
 
           {/* 名称 */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-neutral-500">名称</label>
+            <label className="mb-1.5 block text-xs font-medium text-ink-soft">名称</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="如：iPhone 15"
               maxLength={30}
-              className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-rose-400"
+              className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
 
           {/* 金额 + 日期 */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-neutral-500">金额（元）</label>
+              <label className="mb-1.5 block text-xs font-medium text-ink-soft">金额（元）</label>
               <input
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -186,28 +186,28 @@ export default function AssetForm() {
                 inputMode="decimal"
                 min="0"
                 placeholder="5999"
-                className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-rose-400"
+                className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-neutral-500">购买日期</label>
+              <label className="mb-1.5 block text-xs font-medium text-ink-soft">购买日期</label>
               <input
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
                 type="date"
-                className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-rose-400"
+                className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
               />
             </div>
           </div>
 
           {/* 分类 */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-neutral-500">分类</label>
+            <label className="mb-1.5 block text-xs font-medium text-ink-soft">分类</label>
             <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
               <button
                 onClick={() => setCategoryId(null)}
                 className={`shrink-0 rounded-full px-3 py-1.5 text-xs ${
-                  categoryId === null ? 'bg-rose-500 text-white' : 'bg-neutral-100 text-neutral-600'
+                  categoryId === null ? 'bg-accent text-white' : 'bg-surface-2 text-ink-soft'
                 }`}
               >
                 未分类
@@ -217,7 +217,7 @@ export default function AssetForm() {
                   key={c.id}
                   onClick={() => setCategoryId(c.id)}
                   className={`shrink-0 rounded-full px-3 py-1.5 text-xs ${
-                    categoryId === c.id ? 'bg-rose-500 text-white' : 'bg-neutral-100 text-neutral-600'
+                    categoryId === c.id ? 'bg-accent text-white' : 'bg-surface-2 text-ink-soft'
                   }`}
                 >
                   {c.name}
@@ -225,7 +225,7 @@ export default function AssetForm() {
               ))}
               <button
                 onClick={() => setCatEditor(true)}
-                className="shrink-0 rounded-full bg-neutral-100 px-3 py-1.5 text-xs text-rose-600"
+                className="shrink-0 rounded-full bg-surface-2 px-3 py-1.5 text-xs text-accent-ink"
               >
                 ＋ 新建
               </button>
@@ -234,7 +234,7 @@ export default function AssetForm() {
 
           {/* 图标 */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-neutral-500">图标 {photo && '（已拍照，图标作备用）'}</label>
+            <label className="mb-1.5 block text-xs font-medium text-ink-soft">图标 {photo && '（已拍照，图标作备用）'}</label>
             <div className="max-h-36 overflow-y-auto pr-1">
               <IconPicker value={icon} onChange={setIcon} />
             </div>
@@ -242,19 +242,19 @@ export default function AssetForm() {
 
           {/* 备注 */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-neutral-500">备注</label>
+            <label className="mb-1.5 block text-xs font-medium text-ink-soft">备注</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               maxLength={200}
               placeholder="选填"
-              className="w-full resize-none rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm outline-none focus:border-rose-400"
+              className="w-full resize-none rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
 
           {editing && (
-            <button onClick={del} className="flex items-center gap-1.5 text-sm text-rose-600">
+            <button onClick={del} className="flex items-center gap-1.5 text-sm text-danger">
               <Trash size={15} /> 删除该资产
             </button>
           )}
@@ -264,7 +264,7 @@ export default function AssetForm() {
           <button
             onClick={submit}
             disabled={saving}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-rose-500 py-3 text-sm font-medium text-white disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-medium text-white disabled:opacity-50"
           >
             {saving && <LoaderCircle size={16} className="animate-spin" />}
             {saving ? '保存中…' : editing ? '保存修改' : '添加'}

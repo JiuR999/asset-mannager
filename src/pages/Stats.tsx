@@ -92,7 +92,7 @@ export default function Stats() {
       </header>
 
       {/* 范围切换 */}
-      <div className="flex gap-1 rounded-xl bg-neutral-100 p-1 text-sm">
+      <div className="flex gap-1 rounded-xl bg-surface-2 p-1 text-sm">
         {(
           [
             ['all', '全部'],
@@ -103,7 +103,7 @@ export default function Stats() {
           <button
             key={k}
             onClick={() => setScope(k)}
-            className={`flex-1 rounded-lg py-1.5 transition ${scope === k ? 'bg-white font-medium shadow-sm' : 'text-neutral-500'}`}
+            className={`flex-1 rounded-lg py-1.5 transition ${scope === k ? 'bg-surface font-medium shadow-sm' : 'text-ink-soft'}`}
           >
             {label}
           </button>
@@ -112,23 +112,23 @@ export default function Stats() {
 
       {/* 汇总卡 */}
       <div className="mt-3 grid grid-cols-2 gap-2.5">
-        <div className="rounded-2xl bg-rose-50 p-4">
-          <p className="text-[11px] text-rose-400">总花费（{scope === 'all' ? '全部' : scope === 'active' ? '在用' : '已退役'}）</p>
-          <p className="mt-1 text-xl font-bold text-rose-600">{fmtMoney(totalSpend)}</p>
-          <p className="text-[11px] text-rose-300">{filtered.length} 件资产</p>
+        <div className="rounded-2xl bg-accent-soft p-4">
+          <p className="text-[11px] text-ink-soft">总花费（{scope === 'all' ? '全部' : scope === 'active' ? '在用' : '已退役'}）</p>
+          <p className="mt-1 text-xl font-bold text-accent-ink">{fmtMoney(totalSpend)}</p>
+          <p className="text-[11px] text-ink-faint">{filtered.length} 件资产</p>
         </div>
-        <div className="rounded-2xl bg-white p-4 shadow-sm shadow-neutral-200/60">
-          <p className="text-[11px] text-neutral-400">每天合计消耗</p>
-          <p className="mt-1 text-xl font-bold text-neutral-800">{fmtDaily(nowDaily)}</p>
-          <p className="text-[11px] text-neutral-300">在用 {activeCount} 件</p>
+        <div className="rounded-2xl bg-surface p-4 shadow-sm">
+          <p className="text-[11px] text-ink-faint">每天合计消耗</p>
+          <p className="mt-1 text-xl font-bold text-ink">{fmtDaily(nowDaily)}</p>
+          <p className="text-[11px] text-ink-faint">在用 {activeCount} 件</p>
         </div>
       </div>
 
       {retiredList.length > 0 && (
-        <div className="mt-2.5 rounded-2xl bg-neutral-100 p-4 text-xs leading-relaxed text-neutral-500">
-          已退役 <span className="font-semibold text-neutral-800">{retiredList.length}</span> 件 · 总价值{' '}
-          <span className="font-semibold text-neutral-800">{fmtMoney(retiredList.reduce((s, a) => s + a.price, 0))}</span> ·
-          平均服役 <span className="font-semibold text-neutral-800">{avgService}</span> 天
+        <div className="mt-2.5 rounded-2xl bg-surface-2 p-4 text-xs leading-relaxed text-ink-soft">
+          已退役 <span className="font-semibold text-ink">{retiredList.length}</span> 件 · 总价值{' '}
+          <span className="font-semibold text-ink">{fmtMoney(retiredList.reduce((s, a) => s + a.price, 0))}</span> ·
+          平均服役 <span className="font-semibold text-ink">{avgService}</span> 天
         </div>
       )}
 
@@ -138,7 +138,7 @@ export default function Stats() {
           <select
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            className="rounded-lg bg-neutral-100 px-2 py-1 text-xs text-neutral-600 outline-none"
+            className="rounded-lg bg-surface-2 px-2 py-1 text-xs text-ink-soft outline-none"
           >
             <option value="recent">近 12 个月</option>
             {years.map((y) => (
@@ -157,7 +157,7 @@ export default function Stats() {
               formatter={(v) => [fmtMoney(Number(v)), '花费']}
               contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', fontSize: 12 }}
             />
-            <Bar dataKey="amount" fill="#fb7185" radius={[6, 6, 0, 0]} maxBarSize={28} />
+            <Bar dataKey="amount" fill="var(--accent)" radius={[6, 6, 0, 0]} maxBarSize={28} />
           </BarChart>
         </ResponsiveContainer>
       </Section>
@@ -183,9 +183,9 @@ export default function Stats() {
               {byCategory.slice(0, 7).map((c, i) => (
                 <div key={c.name} className="flex items-center gap-2 text-xs">
                   <span className="size-2.5 shrink-0 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
-                  <span className="flex-1 truncate text-neutral-600">{c.name}</span>
-                  <span className="text-neutral-400">{Math.round((c.value / (totalSpend || 1)) * 100)}%</span>
-                  <span className="w-16 text-right font-medium text-neutral-700">{fmtMoney(c.value)}</span>
+                  <span className="flex-1 truncate text-ink-soft">{c.name}</span>
+                  <span className="text-ink-faint">{Math.round((c.value / (totalSpend || 1)) * 100)}%</span>
+                  <span className="w-16 text-right font-medium text-ink">{fmtMoney(c.value)}</span>
                 </div>
               ))}
             </div>
@@ -198,17 +198,17 @@ export default function Stats() {
         <Section title={scope === 'retired' ? '服役最久 TOP 5' : '日均成本 TOP 5'}>
           <div className="space-y-2">
             {top.map((a, i) => (
-              <div key={a.id} className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm shadow-neutral-200/60">
-                <span className="w-4 text-center text-sm font-bold text-neutral-300">{i + 1}</span>
+              <div key={a.id} className="flex items-center gap-3 rounded-2xl bg-surface p-3 shadow-sm">
+                <span className="w-4 text-center text-sm font-bold text-ink-faint">{i + 1}</span>
                 <Thumb asset={a} className="size-10" iconSize={18} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{a.name}</p>
-                  <p className="text-[11px] text-neutral-400">
+                  <p className="text-[11px] text-ink-faint">
                     {scope === 'retired' ? `服役 ${activeDays(a)} 天` : `已用 ${activeDays(a)} 天`} · {fmtMoney(a.price)}
                   </p>
                 </div>
-                {scope !== 'retired' && <span className="text-sm font-semibold text-rose-600">{fmtDaily(dailyCost(a))}/天</span>}
-                {scope === 'retired' && <span className="text-sm font-semibold text-neutral-500">{activeDays(a)} 天</span>}
+                {scope !== 'retired' && <span className="text-sm font-semibold text-accent-ink">{fmtDaily(dailyCost(a))}/天</span>}
+                {scope === 'retired' && <span className="text-sm font-semibold text-ink-soft">{activeDays(a)} 天</span>}
               </div>
             ))}
           </div>
@@ -222,8 +222,8 @@ export default function Stats() {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="mt-5 rounded-2xl bg-white p-4 shadow-sm shadow-neutral-200/60">
-      <h2 className="mb-3 text-sm font-semibold text-neutral-800">{title}</h2>
+    <div className="mt-5 rounded-2xl bg-surface p-4 shadow-sm">
+      <h2 className="mb-3 text-sm font-semibold text-ink">{title}</h2>
       {children}
     </div>
   )

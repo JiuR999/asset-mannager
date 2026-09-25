@@ -5,13 +5,139 @@
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-hero-from: var(--hero-from);
+  --color-hero-to: var(--hero-to);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+}
+
+/* 普通（默认）：清透冰蓝 */
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --line: #e2e8f0;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-faint: #94a3b8;
+  --accent: #0284c7;
+  --accent-2: #0369a1;
+  --accent-soft: #e0f2fe;
+  --accent-ink: #0369a1;
+  --hero-from: #0ea5e9;
+  --hero-to: #06b6d4;
+  --danger: #e11d48;
+  --danger-soft: #ffe4e6;
+}
+
+/* 玻璃拟态 */
+[data-theme="glass"] {
+  --bg: #dbeafe;
+  --surface: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.4);
+  --line: rgba(255, 255, 255, 0.65);
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --ink-faint: #64748b;
+  --accent: #2563eb;
+  --accent-2: #1d4ed8;
+  --accent-soft: rgba(255, 255, 255, 0.55);
+  --accent-ink: #1d4ed8;
+  --hero-from: #6366f1;
+  --hero-to: #0ea5e9;
+  --danger: #e11d48;
+  --danger-soft: rgba(225, 29, 72, 0.12);
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+}
+
+/* 极简瑞士 */
+[data-theme="swiss"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f5f5;
+  --line: #e5e5e5;
+  --ink: #0a0a0a;
+  --ink-soft: #404040;
+  --ink-faint: #737373;
+  --accent: #0f172a;
+  --accent-2: #1e293b;
+  --accent-soft: #f1f5f9;
+  --accent-ink: #0f172a;
+  --hero-from: #0f172a;
+  --hero-to: #334155;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --radius-xl: 0.125rem;
+  --radius-2xl: 0.25rem;
+  --radius-3xl: 0.25rem;
+  --radius-lg: 0.125rem;
+}
+
+/* 亲自然 */
+[data-theme="biophilic"] {
+  --bg: #f4f7f2;
+  --surface: #ffffff;
+  --surface-2: #e9f0e6;
+  --line: #dce5d8;
+  --ink: #1e2a20;
+  --ink-soft: #4a5a4c;
+  --ink-faint: #8a9789;
+  --accent: #2f7d5f;
+  --accent-2: #25624a;
+  --accent-soft: #e3efe8;
+  --accent-ink: #2f7d5f;
+  --hero-from: #3f9d78;
+  --hero-to: #2f7d5f;
+  --danger: #d0453a;
+  --danger-soft: #fbe9e7;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
 html {
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 antialiased;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
+}
+
+@layer base {
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* 玻璃拟态：冷色渐变背景 + 磨砂卡片 */
+[data-theme="glass"] body {
+  background:
+    radial-gradient(55% 50% at 12% 8%, rgba(129, 140, 248, 0.5), transparent 60%),
+    radial-gradient(50% 45% at 92% 0%, rgba(56, 189, 248, 0.45), transparent 60%),
+    radial-gradient(60% 55% at 82% 100%, rgba(45, 212, 191, 0.35), transparent 62%),
+    linear-gradient(160deg, #e0f2fe, #eef2ff);
+  background-attachment: fixed;
+}
+
+[data-theme="glass"] [class~="bg-surface"],
+[data-theme="glass"] [class~="bg-surface-2"] {
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
 
 @utility no-scrollbar {

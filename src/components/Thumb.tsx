@@ -19,11 +19,11 @@ export default function Thumb({ asset, className = '', iconSize = 22 }: Props) {
 
   if (asset.photo) {
     return (
-      <div className={`relative shrink-0 overflow-hidden rounded-xl bg-neutral-100 ${className}`}>
+      <div className={`relative shrink-0 overflow-hidden rounded-xl bg-surface-2 ${className}`}>
         {url ? (
           <img src={url} alt={asset.name} className="size-full object-cover" />
         ) : (
-          <div className="flex size-full items-center justify-center text-neutral-300">
+          <div className="flex size-full items-center justify-center text-ink-faint">
             <LoaderCircle size={16} className="animate-spin" />
           </div>
         )}
