@@ -11,8 +11,9 @@ import {
   YAxis,
 } from 'recharts'
 import { activeDays, dailyCost, fmtDaily, fmtMoney } from '../lib/cost'
-import { CHART_COLORS } from '../lib/icons'
+import { chartPalette } from '../lib/color'
 import { useData } from '../store/data'
+import { useTheme } from '../store/theme'
 import BottomNav from '../components/BottomNav'
 import Thumb from '../components/Thumb'
 
@@ -20,8 +21,12 @@ type Scope = 'all' | 'active' | 'retired'
 
 export default function Stats() {
   const db = useData((s) => s.db)
+  const theme = useTheme((s) => s.theme)
+  const customAccent = useTheme((s) => s.customAccent)
   const [scope, setScope] = useState<Scope>('all')
   const [year, setYear] = useState<string>('recent')
+
+  const colors = useMemo(() => chartPalette(theme, customAccent), [theme, customAccent])
 
   const filtered = useMemo(
     () =>
@@ -180,7 +185,7 @@ export default function Stats() {
                     stroke="none"
                   >
                     {byCategory.map((_, i) => (
-                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      <Cell key={i} fill={colors[i % colors.length]} />
                     ))}
                   </Pie>
                   <Tooltip
@@ -197,7 +202,7 @@ export default function Stats() {
             <div className="flex-1 space-y-1.5 pl-2">
               {byCategory.slice(0, 7).map((c, i) => (
                 <div key={c.name} className="flex items-center gap-2 text-xs">
-                  <span className="size-2.5 shrink-0 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                  <span className="size-2.5 shrink-0 rounded-full" style={{ background: colors[i % colors.length] }} />
                   <span className="flex-1 truncate text-ink-soft">{c.name}</span>
                   <span className="text-ink-faint">{Math.round((c.value / (totalSpend || 1)) * 100)}%</span>
                   <span className="w-16 text-right font-medium text-ink">{fmtMoney(c.value)}</span>

@@ -120,23 +120,7 @@ export function categoryColor(id: string): string {
   return COLOR_CLASSES[h % COLOR_CLASSES.length]
 }
 
-/** 图表配色（分类占比用，冷色调） */
-export const CHART_COLORS = [
-  '#0ea5e9',
-  '#06b6d4',
-  '#14b8a6',
-  '#10b981',
-  '#6366f1',
-  '#3b82f6',
-  '#8b5cf6',
-  '#2563eb',
-  '#2dd4bf',
-  '#a5b4fc',
-  '#22c55e',
-  '#7dd3fc',
-  '#64748b',
-  '#818cf8',
-]
+/** 图表配色由 chartPalette（lib/color.ts）按主题动态派生，保证与主题统一 */
 
 export const DEFAULT_CATEGORIES: Category[] = [
   { id: 'c_digital', name: '数码', icon: 'smartphone' },

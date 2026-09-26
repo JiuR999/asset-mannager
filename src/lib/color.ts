@@ -1,3 +1,5 @@
+import type { ThemeId } from '../store/theme'
+
 export interface AccentPalette {
   accent: string
   accent2: string
@@ -77,4 +79,69 @@ export function deriveAccent(hex: string): AccentPalette {
   const heroFrom = rgbToHex(...hslToRgb(h, s, clamp(l + 0.05, 0, 1)))
   const heroTo = rgbToHex(...hslToRgb(clamp(h - 12, 0, 360), clamp(s + 0.06, 0, 1), clamp(l + 0.02, 0, 1)))
   return { accent, accent2, accentSoft, accentInk, heroFrom, heroTo }
+}
+
+/** 玻璃拟态：靛紫系 */
+const GLASS_PALETTE = [
+  '#6366f1',
+  '#8b5cf6',
+  '#0ea5e9',
+  '#3b82f6',
+  '#a78bfa',
+  '#06b6d4',
+  '#60a5fa',
+  '#c084fc',
+  '#22d3ee',
+  '#818cf8',
+]
+
+/** 瑞士极简：中性灰阶 */
+const SWISS_PALETTE = [
+  '#0f172a',
+  '#334155',
+  '#475569',
+  '#64748b',
+  '#94a3b8',
+  '#1e293b',
+  '#52525b',
+  '#a1a1aa',
+  '#3f3f46',
+  '#cbd5e1',
+]
+
+/** 亲自然：苔绿系 */
+const BIOPHILIC_PALETTE = [
+  '#2f7d5f',
+  '#3f9d78',
+  '#4aae86',
+  '#25624a',
+  '#6fae93',
+  '#2b8a6a',
+  '#57b894',
+  '#1f5c46',
+  '#7cc2a1',
+  '#3c8a6a',
+]
+
+/** 由主色派生一组合谐的图表色板（普通主题跟随自定义配色） */
+function spreadFromHue(h: number, s: number, l: number): string[] {
+  const offsets = [0, 24, -20, 40, -40, 12, -28, 52, -52, 8]
+  const lights = [0, -0.04, 0.04, -0.08, 0.08, -0.02, 0.02, -0.1, 0.1, 0]
+  return offsets.map((off, i) => {
+    const nh = (h + off + 360) % 360
+    const nl = clamp(l + lights[i], 0.28, 0.72)
+    const ns = clamp(s * 0.9, 0.35, 0.85)
+    return rgbToHex(...hslToRgb(nh, ns, nl))
+  })
+}
+
+export function chartPalette(theme: ThemeId, customAccent: string | null): string[] {
+  if (theme === 'normal') {
+    const [r, g, b] = hexToRgb(customAccent ?? '#0284c7')
+    const [h, s, l] = rgbToHsl(r, g, b)
+    return spreadFromHue(h, s, l)
+  }
+  if (theme === 'glass') return GLASS_PALETTE
+  if (theme === 'swiss') return SWISS_PALETTE
+  return BIOPHILIC_PALETTE
 }

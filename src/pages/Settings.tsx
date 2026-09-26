@@ -43,6 +43,8 @@ export default function Settings() {
   const setTheme = useTheme((s) => s.setTheme)
   const customAccent = useTheme((s) => s.customAccent)
   const setCustomAccent = useTheme((s) => s.setCustomAccent)
+  const navStyle = useTheme((s) => s.navStyle)
+  const setNavStyle = useTheme((s) => s.setNavStyle)
 
   const [spaces, setSpaces] = useState<string[]>([])
   const [editing, setEditing] = useState<Category | null>(null)
@@ -199,6 +201,28 @@ export default function Settings() {
               </button>
             )
           })}
+        </div>
+
+        <div className="mt-3 border-t border-line pt-3">
+          <p className="mb-2 text-xs font-medium text-ink-soft">底部导航</p>
+          <div className="flex gap-1 rounded-xl bg-surface-2 p-1 text-sm">
+            {(
+              [
+                ['css', '轻盈拖拽'] as const,
+                ['webgl', '液态玻璃'] as const,
+              ]
+            ).map(([k, label]) => (
+              <button
+                key={k}
+                onClick={() => setNavStyle(k)}
+                className={`flex-1 rounded-lg py-1.5 transition ${
+                  navStyle === k ? 'bg-surface font-medium shadow-sm' : 'text-ink-soft'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {theme === 'normal' && (
