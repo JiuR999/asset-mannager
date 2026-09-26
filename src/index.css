@@ -140,6 +140,14 @@ body {
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
 
+/* 液态悬浮底栏：选中指示器在标签间流动形变（回弹曲线） */
+.liquid-blob {
+  transition:
+    left 380ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    width 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: left, width;
+}
+
 @utility no-scrollbar {
   scrollbar-width: none;
   &::-webkit-scrollbar {

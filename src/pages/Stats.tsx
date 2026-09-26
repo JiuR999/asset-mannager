@@ -166,19 +166,34 @@ export default function Stats() {
       {byCategory.length > 0 && (
         <Section title="分类占比">
           <div className="flex items-center">
-            <ResponsiveContainer width="45%" height={180}>
-              <PieChart>
-                <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius="92%" paddingAngle={2} stroke="var(--surface)" strokeWidth={2}>
-                  {byCategory.map((_, i) => (
-                    <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(v, n) => [fmtMoney(Number(v)), n as string]}
-                  contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', fontSize: 12 }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="relative" style={{ width: '45%' }}>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={byCategory}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius="60%"
+                    outerRadius="92%"
+                    paddingAngle={5}
+                    cornerRadius={10}
+                    stroke="none"
+                  >
+                    {byCategory.map((_, i) => (
+                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v, n) => [fmtMoney(Number(v)), n as string]}
+                    contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', fontSize: 12 }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[11px] text-ink-faint">总花费</span>
+                <span className="text-sm font-bold text-ink">{fmtMoney(totalSpend)}</span>
+              </div>
+            </div>
             <div className="flex-1 space-y-1.5 pl-2">
               {byCategory.slice(0, 7).map((c, i) => (
                 <div key={c.name} className="flex items-center gap-2 text-xs">
