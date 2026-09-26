@@ -22,6 +22,8 @@ const THEME_META: Record<ThemeId, string> = {
   glass: '#6366f1',
   swiss: '#0f172a',
   biophilic: '#3f9d78',
+  softmed: '#0891b2',
+  epaper: '#fdfbf7',
 }
 
 const ACCENT_VARS = ['--accent', '--accent-2', '--accent-soft', '--accent-ink', '--hero-from', '--hero-to']

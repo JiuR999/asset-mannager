@@ -123,6 +123,34 @@ const BIOPHILIC_PALETTE = [
   '#3c8a6a',
 ]
 
+/** 舒缓青碧：柔和医疗青 / teal / 健康绿 */
+const SOFTMED_PALETTE = [
+  '#0891b2',
+  '#0d9488',
+  '#38bdf8',
+  '#14b8a6',
+  '#059669',
+  '#22d3ee',
+  '#2dd4bf',
+  '#0ea5e9',
+  '#34d399',
+  '#5eead4',
+]
+
+/** 电子纸：类印刷的暗哑墨水色（含暖土黄强调） */
+const EPAPER_PALETTE = [
+  '#22303a',
+  '#8f6f1f',
+  '#4f6b5e',
+  '#7a4f45',
+  '#5c6275',
+  '#9c7f2f',
+  '#3f6b6b',
+  '#6f6f6f',
+  '#8a8770',
+  '#46535b',
+]
+
 /** 由主色派生一组合谐的图表色板（普通主题跟随自定义配色） */
 function spreadFromHue(h: number, s: number, l: number): string[] {
   const offsets = [0, 24, -20, 40, -40, 12, -28, 52, -52, 8]
@@ -143,5 +171,7 @@ export function chartPalette(theme: ThemeId, customAccent: string | null): strin
   }
   if (theme === 'glass') return GLASS_PALETTE
   if (theme === 'swiss') return SWISS_PALETTE
+  if (theme === 'softmed') return SOFTMED_PALETTE
+  if (theme === 'epaper') return EPAPER_PALETTE
   return BIOPHILIC_PALETTE
 }

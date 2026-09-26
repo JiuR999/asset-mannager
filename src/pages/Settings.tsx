@@ -15,6 +15,8 @@ const THEMES: { id: ThemeId; label: string; desc: string; swatch: string }[] = [
   { id: 'glass', label: '玻璃拟态', desc: '磨砂玻璃', swatch: '#6366f1' },
   { id: 'swiss', label: '瑞士极简', desc: '黑白克制', swatch: '#0f172a' },
   { id: 'biophilic', label: '亲自然', desc: '青苔绿意', swatch: '#3f9d78' },
+  { id: 'softmed', label: '舒缓青碧', desc: '柔和医健', swatch: '#0891b2' },
+  { id: 'epaper', label: '电子纸', desc: '纸感护眼', swatch: '#b08b2e' },
 ]
 
 const PRESETS = ['#0ea5e9', '#06b6d4', '#2563eb', '#6366f1', '#8b5cf6', '#0d9488', '#059669', '#334155']

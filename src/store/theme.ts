@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type ThemeId = 'normal' | 'glass' | 'swiss' | 'biophilic'
+export type ThemeId = 'normal' | 'glass' | 'swiss' | 'biophilic' | 'softmed' | 'epaper'
 
 /** 底部导航实现：css = 纯 CSS 弹簧拖拽版，webgl = 液态玻璃高光版 */
 export type NavStyle = 'css' | 'webgl'
