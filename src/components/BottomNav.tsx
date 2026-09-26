@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { ChartPie, House, Plus, Settings, type LucideIcon } from 'lucide-react'
 import { LiquidGlassNav } from 'webgl-liquid-glass'
@@ -45,10 +45,14 @@ export default function BottomNav() {
 }
 
 function WebGLNav({ navigate, activeTo }: { navigate: (to: string) => void; activeTo: string }) {
-  const items = tabs.map((t) => {
-    const Icon = t.icon
-    return { id: t.to, label: t.label, icon: <Icon size={22} strokeWidth={2} /> }
-  })
+  const items = useMemo(
+    () =>
+      tabs.map((t) => {
+        const Icon = t.icon
+        return { id: t.to, label: t.label, icon: <Icon size={22} strokeWidth={2} /> }
+      }),
+    [],
+  )
 
   return (
     <LiquidGlassNav
