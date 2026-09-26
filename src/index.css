@@ -40,6 +40,11 @@
   --hero-to: #06b6d4;
   --danger: #e11d48;
   --danger-soft: #ffe4e6;
+  --radius-scale: 1;
+  --radius-base-lg: 0.5rem;
+  --radius-base-xl: 0.75rem;
+  --radius-base-2xl: 1rem;
+  --radius-base-3xl: 1.5rem;
 }
 
 /* 玻璃拟态 */
@@ -59,8 +64,8 @@
   --hero-to: #0ea5e9;
   --danger: #e11d48;
   --danger-soft: rgba(225, 29, 72, 0.12);
-  --radius-2xl: 1.25rem;
-  --radius-3xl: 1.75rem;
+  --radius-base-2xl: 1.25rem;
+  --radius-base-3xl: 1.75rem;
 }
 
 /* 极简瑞士 */
@@ -80,10 +85,10 @@
   --hero-to: #334155;
   --danger: #dc2626;
   --danger-soft: #fef2f2;
-  --radius-xl: 0.125rem;
-  --radius-2xl: 0.25rem;
-  --radius-3xl: 0.25rem;
-  --radius-lg: 0.125rem;
+  --radius-base-lg: 0.125rem;
+  --radius-base-xl: 0.125rem;
+  --radius-base-2xl: 0.25rem;
+  --radius-base-3xl: 0.25rem;
 }
 
 /* 亲自然 */
@@ -103,8 +108,8 @@
   --hero-to: #2f7d5f;
   --danger: #d0453a;
   --danger-soft: #fbe9e7;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
+  --radius-base-2xl: 1.5rem;
+  --radius-base-3xl: 2rem;
 }
 
 /* 舒缓青碧：Soft UI Evolution + AI-Native，柔和医疗健康色调 */
@@ -124,10 +129,7 @@
   --hero-to: #0d9488;
   --danger: #e5484d;
   --danger-soft: #fdeaea;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
-  --radius-3xl: 1.25rem;
+  --radius-base-3xl: 1.25rem;
 }
 
 /* 电子纸：E-Ink / Paper，纸感护眼、墨色文字、暖土黄强调 */
@@ -147,10 +149,18 @@
   --hero-to: #a9832a;
   --danger: #b3261e;
   --danger-soft: #f5e9e6;
-  --radius-lg: 0.125rem;
-  --radius-xl: 0.25rem;
-  --radius-2xl: 0.25rem;
-  --radius-3xl: 0.375rem;
+  --radius-base-lg: 0.125rem;
+  --radius-base-xl: 0.25rem;
+  --radius-base-2xl: 0.25rem;
+  --radius-base-3xl: 0.375rem;
+}
+
+/* 全局圆角 = 主题基准 × 缩放倍数（rounded-full 胶囊不受影响） */
+:root {
+  --radius-lg: calc(var(--radius-base-lg) * var(--radius-scale));
+  --radius-xl: calc(var(--radius-base-xl) * var(--radius-scale));
+  --radius-2xl: calc(var(--radius-base-2xl) * var(--radius-scale));
+  --radius-3xl: calc(var(--radius-base-3xl) * var(--radius-scale));
 }
 
 html {

@@ -31,10 +31,12 @@ const ACCENT_VARS = ['--accent', '--accent-2', '--accent-soft', '--accent-ink', 
 export default function App() {
   const theme = useTheme((s) => s.theme)
   const customAccent = useTheme((s) => s.customAccent)
+  const radiusScale = useTheme((s) => s.radiusScale)
 
   useEffect(() => {
     const root = document.documentElement
     root.dataset.theme = theme
+    root.style.setProperty('--radius-scale', String(radiusScale))
     const meta = document.querySelector('meta[name="theme-color"]')
 
     if (theme === 'normal' && customAccent) {
@@ -50,7 +52,7 @@ export default function App() {
       ACCENT_VARS.forEach((v) => root.style.removeProperty(v))
       meta?.setAttribute('content', THEME_META[theme] ?? THEME_META.normal)
     }
-  }, [theme, customAccent])
+  }, [theme, customAccent, radiusScale])
 
   return (
     <BrowserRouter>

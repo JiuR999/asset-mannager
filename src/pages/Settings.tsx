@@ -47,6 +47,8 @@ export default function Settings() {
   const setCustomAccent = useTheme((s) => s.setCustomAccent)
   const navStyle = useTheme((s) => s.navStyle)
   const setNavStyle = useTheme((s) => s.setNavStyle)
+  const radiusScale = useTheme((s) => s.radiusScale)
+  const setRadiusScale = useTheme((s) => s.setRadiusScale)
 
   const [spaces, setSpaces] = useState<string[]>([])
   const [editing, setEditing] = useState<Category | null>(null)
@@ -224,6 +226,31 @@ export default function Settings() {
                 {label}
               </button>
             ))}
+          </div>
+        </div>
+
+        <div className="mt-3 border-t border-line pt-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-ink-soft">圆角大小</p>
+            <button onClick={() => setRadiusScale(1)} className="text-xs text-accent-ink">
+              重置为默认
+            </button>
+          </div>
+          <div className="mt-2.5 flex items-center gap-3">
+            <input
+              type="range"
+              min={50}
+              max={150}
+              step={5}
+              value={Math.round(radiusScale * 100)}
+              onChange={(e) => setRadiusScale(Number(e.target.value) / 100)}
+              aria-label="圆角大小"
+              className="flex-1"
+              style={{ accentColor: 'var(--accent)' }}
+            />
+            <span className="w-12 shrink-0 text-right text-xs tabular-nums text-ink-soft">
+              {Math.round(radiusScale * 100)}%
+            </span>
           </div>
         </div>
 

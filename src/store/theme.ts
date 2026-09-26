@@ -11,9 +11,12 @@ interface ThemeState {
   /** 「普通」主题下的自定义主色（null = 默认清透冰蓝） */
   customAccent: string | null
   navStyle: NavStyle
+  /** 全局圆角缩放倍数（1 = 主题默认） */
+  radiusScale: number
   setTheme: (theme: ThemeId) => void
   setCustomAccent: (hex: string | null) => void
   setNavStyle: (navStyle: NavStyle) => void
+  setRadiusScale: (radiusScale: number) => void
 }
 
 export const useTheme = create<ThemeState>()(
@@ -22,9 +25,11 @@ export const useTheme = create<ThemeState>()(
       theme: 'normal',
       customAccent: null,
       navStyle: 'css',
-      setTheme: (theme) => set({ theme }),
+      radiusScale: 1,
+      setTheme: (theme) => set({ theme, radiusScale: 1 }),
       setCustomAccent: (customAccent) => set({ customAccent }),
       setNavStyle: (navStyle) => set({ navStyle }),
+      setRadiusScale: (radiusScale) => set({ radiusScale }),
     }),
     { name: 'asset-theme' },
   ),
