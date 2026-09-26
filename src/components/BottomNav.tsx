@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router'
 import { ChartPie, House, Plus, Settings } from 'lucide-react'
 import { useUi } from '../store/ui'
-import { NAV_STYLE } from '../lib/nav-config'
+import { useTheme } from '../store/theme'
 
 const tabs = [
   { to: '/', icon: House, label: '首页' },
@@ -14,6 +14,7 @@ export default function BottomNav() {
   const openForm = useUi((s) => s.openForm)
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const navStyle = useTheme((s) => s.navStyle)
 
   const activeIndex = tabs.findIndex((t) =>
     t.to === '/' ? pathname === '/' : pathname.startsWith(t.to),
@@ -23,7 +24,7 @@ export default function BottomNav() {
     <>
       <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 pointer-events-none">
         <div className="flex justify-center">
-          {NAV_STYLE === 'liquid' ? (
+          {navStyle === 'liquid' ? (
             <LiquidPill activeIndex={activeIndex} />
           ) : (
             <GlassPill activeIndex={activeIndex} />
