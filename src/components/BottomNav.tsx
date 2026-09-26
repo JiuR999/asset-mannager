@@ -60,8 +60,7 @@ function WebGLNav({ navigate, activeTo }: { navigate: (to: string) => void; acti
       style={{
         zIndex: 40,
         bottom: 'calc(20px + env(safe-area-inset-bottom))',
-        transform: 'translateX(-50%) scale(1.15)',
-        transformOrigin: '50% 100%',
+        transform: 'translateX(-50%)',
         background: 'color-mix(in srgb, var(--surface) 65%, transparent)',
         boxShadow:
           '0 8px 32px rgba(15, 23, 42, 0.12), inset 0 0 0 1px color-mix(in srgb, var(--line) 85%, transparent)',
