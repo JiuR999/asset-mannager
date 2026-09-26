@@ -109,6 +109,7 @@
 
 html {
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -121,6 +122,25 @@ body {
 @layer base {
   button:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* 手机端：输入框统一 16px，避免 iOS 聚焦时自动放大页面 */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  button,
+  [role='button'] {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  a,
+  img {
+    -webkit-touch-callout: none;
   }
 }
 

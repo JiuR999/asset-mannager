@@ -111,7 +111,7 @@ export default function AssetForm() {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={closeForm}>
       <div
-        className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-3xl bg-surface sm:rounded-3xl"
+        className="flex max-h-[100dvh] w-full max-w-md flex-col rounded-t-3xl bg-surface sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 pt-4">
@@ -171,6 +171,7 @@ export default function AssetForm() {
               onChange={(e) => setName(e.target.value)}
               placeholder="如：iPhone 15"
               maxLength={30}
+              enterKeyHint="next"
               className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -185,6 +186,7 @@ export default function AssetForm() {
                 type="number"
                 inputMode="decimal"
                 min="0"
+                enterKeyHint="done"
                 placeholder="5999"
                 className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm outline-none focus:border-accent"
               />

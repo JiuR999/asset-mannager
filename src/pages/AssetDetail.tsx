@@ -124,7 +124,7 @@ export default function AssetDetail() {
       {/* 退役弹层 */}
       {retiring && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setRetiring(false)}>
-          <div className="w-full max-w-md rounded-t-3xl bg-surface p-5 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-t-3xl bg-surface p-5 pb-safe sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="mb-1 text-base font-semibold">标记退役</h3>
             <p className="mb-4 text-xs text-ink-faint">选择处置日期（卖出/送人/报废），之后不再计入每日成本。</p>
             <input

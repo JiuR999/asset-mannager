@@ -43,7 +43,7 @@ export default function CategoryEditor({ category, onClose, onSaved }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-surface p-5 sm:rounded-3xl"
+        className="max-h-[100dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-surface p-5 pb-safe sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
