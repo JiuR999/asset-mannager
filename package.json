@@ -15,6 +15,7 @@
     "react-dom": "^19.3.0",
     "react-router": "^7.18.4",
     "recharts": "^3.10.1",
+    "webgl-liquid-glass": "^0.2.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
