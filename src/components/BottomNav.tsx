@@ -1,8 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { ChartPie, House, Plus, Settings } from 'lucide-react'
 import { useUi } from '../store/ui'
-import { useTheme } from '../store/theme'
 
 const tabs = [
   { to: '/', icon: House, label: '首页' },
@@ -10,11 +9,12 @@ const tabs = [
   { to: '/settings', icon: Settings, label: '设置' },
 ] as const
 
+const PILL = 'pointer-events-auto touch-pan-y mb-4 flex items-center gap-1 rounded-full border border-line bg-surface/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl'
+
 export default function BottomNav() {
   const openForm = useUi((s) => s.openForm)
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const navStyle = useTheme((s) => s.navStyle)
 
   const activeIndex = tabs.findIndex((t) =>
     t.to === '/' ? pathname === '/' : pathname.startsWith(t.to),
@@ -22,14 +22,8 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 pointer-events-none">
-        <div className="flex justify-center">
-          {navStyle === 'liquid' ? (
-            <LiquidPill activeIndex={activeIndex} />
-          ) : (
-            <GlassPill activeIndex={activeIndex} />
-          )}
-        </div>
+      <nav className="pb-safe pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center">
+        <LiquidPill activeIndex={activeIndex} />
       </nav>
 
       <button
@@ -46,63 +40,127 @@ export default function BottomNav() {
   )
 }
 
-const pillBase =
-  'pointer-events-auto mb-4 flex items-center gap-1 rounded-full border border-line bg-surface/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl'
-
-function GlassPill({ activeIndex }: { activeIndex: number }) {
-  return (
-    <div className={pillBase}>
-      {tabs.map((t, i) => {
-        const Icon = t.icon
-        const active = i === activeIndex
-        return (
-          <NavLink
-            key={t.to}
-            to={t.to}
-            className={`flex min-w-[4.25rem] flex-col items-center gap-0.5 rounded-full px-3 py-1.5 text-[11px] transition-colors ${
-              active ? 'bg-accent-soft text-accent-ink' : 'text-ink-faint'
-            }`}
-          >
-            <Icon size={20} strokeWidth={active ? 2.4 : 2} />
-            {t.label}
-          </NavLink>
-        )
-      })}
-    </div>
-  )
-}
-
 function LiquidPill({ activeIndex }: { activeIndex: number }) {
   const parentRef = useRef<HTMLDivElement>(null)
-  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([])
-  const [rect, setRect] = useState<{ left: number; width: number } | null>(null)
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const [geom, setGeom] = useState<{ left: number; width: number; step: number } | null>(null)
+
+  const [drag, setDrag] = useState(0)
+  const [dragging, setDragging] = useState(false)
+
+  const startXRef = useRef<number | null>(null)
+  const dragRef = useRef(0)
+  const activatedRef = useRef(false)
+  const didDragRef = useRef(false)
+
+  const navigate = useNavigate()
 
   useLayoutEffect(() => {
-    const el = itemRefs.current[activeIndex]
-    const parent = parentRef.current
-    if (!el || !parent) return
-    const a = el.getBoundingClientRect()
-    const b = parent.getBoundingClientRect()
-    setRect({ left: a.left - b.left, width: a.width })
-  }, [activeIndex])
+    const measure = () => {
+      const parent = parentRef.current
+      const a = itemRefs.current[0]
+      const b = itemRefs.current[1]
+      if (!parent || !a || !b) return
+      const pa = parent.getBoundingClientRect()
+      const ra = a.getBoundingClientRect()
+      const rb = b.getBoundingClientRect()
+      setGeom({ left: ra.left - pa.left, width: ra.width, step: rb.left - ra.left })
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
+  const clampDrag = (dx: number): number => {
+    if (!geom) return 0
+    const maxD = activeIndex === 0 ? 0 : geom.step
+    const minD = activeIndex === tabs.length - 1 ? 0 : -geom.step
+    return Math.max(minD, Math.min(maxD, dx))
+  }
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') return
+    startXRef.current = e.clientX
+    activatedRef.current = false
+    didDragRef.current = false
+    dragRef.current = 0
+  }
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (startXRef.current == null) return
+    const dx = e.clientX - startXRef.current
+    if (!activatedRef.current && Math.abs(dx) > 6) {
+      activatedRef.current = true
+      setDragging(true)
+      e.currentTarget.setPointerCapture(e.pointerId)
+    }
+    if (activatedRef.current) {
+      const clamped = clampDrag(dx)
+      dragRef.current = clamped
+      setDrag(clamped)
+    }
+  }
+
+  const endDrag = () => {
+    if (startXRef.current == null) return
+    startXRef.current = null
+    if (!activatedRef.current) return
+    activatedRef.current = false
+    setDragging(false)
+    setDrag(0)
+    const step = geom?.step ?? 0
+    let target = activeIndex
+    if (step > 0) {
+      if (dragRef.current <= -step / 2) target = activeIndex + 1
+      else if (dragRef.current >= step / 2) target = activeIndex - 1
+    }
+    target = Math.max(0, Math.min(tabs.length - 1, target))
+    dragRef.current = 0
+    if (target !== activeIndex) {
+      didDragRef.current = true
+      navigate(tabs[target].to)
+    }
+  }
+
+  const stretch = geom && dragging ? 1 + Math.min(Math.abs(drag) / geom.step, 1) * 0.4 : 1
 
   return (
-    <div ref={parentRef} className={`relative ${pillBase}`}>
-      {rect && (
+    <div
+      ref={parentRef}
+      className={`${PILL} ${dragging ? 'select-none' : ''}`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onPointerLeave={() => {
+        if (dragging) endDrag()
+      }}
+    >
+      {geom && (
         <span
-          className="liquid-blob absolute top-1.5 bottom-1.5 rounded-full bg-accent-soft"
-          style={{ left: rect.left, width: rect.width }}
+          className={`nav-blob absolute bottom-1.5 top-1.5 rounded-full ${dragging ? '' : 'nav-blob-settle'}`}
+          style={{
+            left: geom.left,
+            width: geom.width,
+            transform: `translateX(${activeIndex * geom.step + drag}px) scaleX(${stretch})`,
+          }}
         />
       )}
       {tabs.map((t, i) => {
         const Icon = t.icon
         const active = i === activeIndex
         return (
-          <NavLink
+          <button
             key={t.to}
-            to={t.to}
             ref={(el) => {
               itemRefs.current[i] = el
+            }}
+            type="button"
+            aria-label={t.label}
+            aria-current={active ? 'page' : undefined}
+            onClick={() => {
+              if (didDragRef.current) return
+              navigate(t.to)
             }}
             className={`relative flex min-w-[4.25rem] flex-col items-center gap-0.5 rounded-full px-3 py-1.5 text-[11px] transition-colors ${
               active ? 'text-accent-ink' : 'text-ink-faint'
@@ -110,7 +168,7 @@ function LiquidPill({ activeIndex }: { activeIndex: number }) {
           >
             <Icon size={20} strokeWidth={active ? 2.4 : 2} />
             {t.label}
-          </NavLink>
+          </button>
         )
       })}
     </div>
