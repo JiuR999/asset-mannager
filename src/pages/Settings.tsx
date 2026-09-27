@@ -3,6 +3,7 @@ import { Check, Copy, Download, LogOut, Palette, Plus, RefreshCw, ShieldCheck, T
 import { useAuth } from '../store/auth'
 import { useData } from '../store/data'
 import { useTheme, type ThemeId } from '../store/theme'
+import { PAPER_SOLIDS, PAPER_TEXTURES } from '../lib/paperBg'
 import { toast } from '../store/toast'
 import { categoryColor, iconComp } from '../lib/icons'
 import { todayStr } from '../lib/cost'
@@ -18,6 +19,7 @@ const THEMES: { id: ThemeId; label: string; desc: string; swatch: string }[] = [
   { id: 'biophilic', label: '亲自然', desc: '青苔绿意', swatch: '#3f9d78' },
   { id: 'softmed', label: '舒缓青碧', desc: '柔和医健', swatch: '#0891b2' },
   { id: 'epaper', label: '电子纸', desc: '纸感护眼', swatch: '#b08b2e' },
+  { id: 'epaper-pro', label: '电子纸 Pro', desc: '纸间手账 · 可换纸', swatch: '#a8801f' },
 ]
 
 const PRESETS = ['#0ea5e9', '#06b6d4', '#2563eb', '#6366f1', '#8b5cf6', '#0d9488', '#059669', '#334155']
@@ -46,6 +48,8 @@ export default function Settings() {
   const setTheme = useTheme((s) => s.setTheme)
   const customAccent = useTheme((s) => s.customAccent)
   const setCustomAccent = useTheme((s) => s.setCustomAccent)
+  const paperBg = useTheme((s) => s.paperBg)
+  const setPaperBg = useTheme((s) => s.setPaperBg)
   const navStyle = useTheme((s) => s.navStyle)
   const setNavStyle = useTheme((s) => s.setNavStyle)
   const radiusScale = useTheme((s) => s.radiusScale)
@@ -291,6 +295,50 @@ export default function Settings() {
                 />
               </label>
             </div>
+          </div>
+        )}
+
+        {theme === 'epaper-pro' && (
+          <div className="mt-3 border-t border-line pt-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-ink-soft">纸张背景</p>
+              {paperBg && (
+                <button onClick={() => setPaperBg(null)} className="text-xs text-accent-ink">
+                  默认米白
+                </button>
+              )}
+            </div>
+            <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
+              {PAPER_SOLIDS.map((s) => (
+                <button
+                  key={s.hex}
+                  onClick={() => setPaperBg({ type: 'solid', hex: s.hex })}
+                  aria-label={`纸色 ${s.label}`}
+                  title={s.label}
+                  className={`size-8 rounded-full border-2 transition ${
+                    paperBg?.type === 'solid' && paperBg.hex === s.hex ? 'scale-110 border-ink' : 'border-transparent'
+                  }`}
+                  style={{ background: s.hex }}
+                />
+              ))}
+            </div>
+            {PAPER_TEXTURES.length > 0 && (
+              <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
+                {PAPER_TEXTURES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setPaperBg({ type: 'texture', id: t.id })}
+                    aria-label={`纸张 ${t.label}`}
+                    title={t.label}
+                    className={`size-12 overflow-hidden rounded-lg border-2 transition ${
+                      paperBg?.type === 'texture' && paperBg.id === t.id ? 'border-ink' : 'border-line'
+                    }`}
+                  >
+                    <img src={t.url} alt={t.label} className="size-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

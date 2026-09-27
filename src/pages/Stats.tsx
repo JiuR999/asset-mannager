@@ -216,7 +216,7 @@ export default function Stats() {
         <Section title={scope === 'retired' ? '服役最久 TOP 5' : '日均成本 TOP 5'}>
           <div className="space-y-2">
             {top.map((a, i) => (
-              <div key={a.id} className="flex items-center gap-3 rounded-2xl bg-surface p-3 shadow-sm">
+              <div key={a.id} className="paper-row flex items-center gap-3 rounded-2xl bg-surface p-3 shadow-sm">
                 <span className="w-4 text-center text-sm font-bold text-ink-faint">{i + 1}</span>
                 <Thumb asset={a} className="size-10" iconSize={18} />
                 <div className="min-w-0 flex-1">

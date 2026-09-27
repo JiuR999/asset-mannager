@@ -158,7 +158,7 @@ export function chartPalette(theme: ThemeId, customAccent: string | null): strin
   }
   if (theme === 'swiss') return SWISS_PALETTE
   if (theme === 'softmed') return SOFTMED_PALETTE
-  if (theme === 'epaper') return EPAPER_PALETTE
+  if (theme === 'epaper' || theme === 'epaper-pro') return EPAPER_PALETTE
   return BIOPHILIC_PALETTE
 }
 

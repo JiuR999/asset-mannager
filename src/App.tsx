@@ -5,6 +5,7 @@ import { useAuth } from './store/auth'
 import { useData } from './store/data'
 import { useTheme, type ThemeId } from './store/theme'
 import { deriveAccent, deriveGlassBg } from './lib/color'
+import { PAPER_TEXTURES } from './lib/paperBg'
 import { toast } from './store/toast'
 import type { Identity } from './types'
 import Toasts from './components/Toasts'
@@ -26,6 +27,7 @@ const THEME_META: Record<ThemeId, string> = {
   biophilic: '#3f9d78',
   softmed: '#0891b2',
   epaper: '#fdfbf7',
+  'epaper-pro': '#faf7ef',
 }
 
 const ACCENT_VARS = ['--accent', '--accent-2', '--accent-soft', '--accent-ink', '--hero-from', '--hero-to']
@@ -36,6 +38,7 @@ const GLASS_BG_VARS = ['--glass-blob-1', '--glass-blob-2', '--glass-blob-3', '--
 export default function App() {
   const theme = useTheme((s) => s.theme)
   const customAccent = useTheme((s) => s.customAccent)
+  const paperBg = useTheme((s) => s.paperBg)
   const radiusScale = useTheme((s) => s.radiusScale)
 
   useEffect(() => {
@@ -68,7 +71,19 @@ export default function App() {
       GLASS_BG_VARS.forEach((v) => root.style.removeProperty(v))
       meta?.setAttribute('content', THEME_META[theme] ?? THEME_META.normal)
     }
-  }, [theme, customAccent, radiusScale])
+
+    // 电子纸 Pro：纸张背景（纹理挂图 / 纯色覆盖 --bg），切走主题时清理
+    root.style.removeProperty('--paper-bg-image')
+    root.style.removeProperty('--bg')
+    if (theme === 'epaper-pro') {
+      if (paperBg?.type === 'texture') {
+        const tex = PAPER_TEXTURES.find((t) => t.id === paperBg.id)
+        if (tex) root.style.setProperty('--paper-bg-image', `url(${tex.url})`)
+      } else if (paperBg?.type === 'solid') {
+        root.style.setProperty('--bg', paperBg.hex)
+      }
+    }
+  }, [theme, customAccent, radiusScale, paperBg])
 
   return (
     <BrowserRouter>
