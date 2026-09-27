@@ -22,8 +22,11 @@ export default function BottomNav() {
   )
   const activeTo = tabs[activeIndex]?.to ?? '/'
 
+  // 详情页/设置页沿用旧布局不显示导航；用 display 隐藏而非卸载，避免 WebGL 上下文反复重建
+  const hidden = pathname.startsWith('/asset/') || pathname === '/settings'
+
   return (
-    <>
+    <div style={{ display: hidden ? 'none' : 'contents' }}>
       {navStyle === 'webgl' ? (
         <WebGLNav navigate={navigate} activeTo={activeTo} />
       ) : (
@@ -40,7 +43,7 @@ export default function BottomNav() {
       >
         <Plus size={26} strokeWidth={2.5} />
       </button>
-    </>
+    </div>
   )
 }
 

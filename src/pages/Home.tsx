@@ -4,7 +4,6 @@ import { useData } from '../store/data'
 import { useUi } from '../store/ui'
 import { dailyCost, fmtDaily, fmtMoney, totalDaily } from '../lib/cost'
 import AssetCard from '../components/AssetCard'
-import BottomNav from '../components/BottomNav'
 
 type Tab = 'active' | 'retired'
 type Sort = 'daily' | 'price' | 'date'
@@ -59,11 +58,11 @@ export default function Home() {
               <span className="ml-1 text-sm font-normal text-white/80">/ 天</span>
             </p>
           </div>
-          <p className="text-right text-[11px] leading-tight text-white/80">
+          {/* <p className="text-right text-[11px] leading-tight text-white/80">
             每天为这些
             <br />
             资产支付的钱
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -140,8 +139,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      <BottomNav />
     </div>
   )
 }
@@ -169,9 +166,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${
-        active ? 'bg-accent text-white' : 'bg-surface text-ink-soft shadow-sm'
-      }`}
+      className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${active ? 'bg-accent text-white' : 'bg-surface text-ink-soft shadow-sm'
+        }`}
     >
       {children}
     </button>

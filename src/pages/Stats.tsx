@@ -14,9 +14,7 @@ import { activeDays, dailyCost, fmtDaily, fmtMoney } from '../lib/cost'
 import { chartPalette } from '../lib/color'
 import { useData } from '../store/data'
 import { useTheme } from '../store/theme'
-import BottomNav from '../components/BottomNav'
 import Thumb from '../components/Thumb'
-
 type Scope = 'all' | 'active' | 'retired'
 
 export default function Stats() {
@@ -235,7 +233,6 @@ export default function Stats() {
         </Section>
       )}
 
-      <BottomNav />
     </div>
   )
 }

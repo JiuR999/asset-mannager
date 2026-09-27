@@ -8,6 +8,7 @@ import { deriveAccent, deriveGlassBg } from './lib/color'
 import { toast } from './store/toast'
 import type { Identity } from './types'
 import Toasts from './components/Toasts'
+import BottomNav from './components/BottomNav'
 import AssetForm from './components/AssetForm'
 import Login from './pages/Login'
 import OAuthCallback from './pages/OAuthCallback'
@@ -163,6 +164,7 @@ function Shell({ identity }: { identity: Identity }) {
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <BottomNav />
       <AssetForm />
     </>
   )
