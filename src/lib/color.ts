@@ -81,20 +81,6 @@ export function deriveAccent(hex: string): AccentPalette {
   return { accent, accent2, accentSoft, accentInk, heroFrom, heroTo }
 }
 
-/** 玻璃拟态：靛紫系 */
-const GLASS_PALETTE = [
-  '#6366f1',
-  '#8b5cf6',
-  '#0ea5e9',
-  '#3b82f6',
-  '#a78bfa',
-  '#06b6d4',
-  '#60a5fa',
-  '#c084fc',
-  '#22d3ee',
-  '#818cf8',
-]
-
 /** 瑞士极简：中性灰阶 */
 const SWISS_PALETTE = [
   '#0f172a',
@@ -151,7 +137,7 @@ const EPAPER_PALETTE = [
   '#46535b',
 ]
 
-/** 由主色派生一组合谐的图表色板（普通主题跟随自定义配色） */
+/** 由主色派生一组合谐的图表色板（普通/玻璃主题跟随自定义配色） */
 function spreadFromHue(h: number, s: number, l: number): string[] {
   const offsets = [0, 24, -20, 40, -40, 12, -28, 52, -52, 8]
   const lights = [0, -0.04, 0.04, -0.08, 0.08, -0.02, 0.02, -0.1, 0.1, 0]
@@ -164,12 +150,12 @@ function spreadFromHue(h: number, s: number, l: number): string[] {
 }
 
 export function chartPalette(theme: ThemeId, customAccent: string | null): string[] {
-  if (theme === 'normal') {
-    const [r, g, b] = hexToRgb(customAccent ?? '#0284c7')
+  if (theme === 'normal' || theme === 'glass') {
+    const fallback = theme === 'glass' ? '#6366f1' : '#0284c7'
+    const [r, g, b] = hexToRgb(customAccent ?? fallback)
     const [h, s, l] = rgbToHsl(r, g, b)
     return spreadFromHue(h, s, l)
   }
-  if (theme === 'glass') return GLASS_PALETTE
   if (theme === 'swiss') return SWISS_PALETTE
   if (theme === 'softmed') return SOFTMED_PALETTE
   if (theme === 'epaper') return EPAPER_PALETTE

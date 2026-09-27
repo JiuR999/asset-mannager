@@ -61,6 +61,7 @@ export default function Settings() {
   const [savingUser, setSavingUser] = useState(false)
 
   const isOwner = identity.mode === 'owner'
+  const defaultAccent = theme === 'glass' ? '#6366f1' : '#0ea5e9'
 
   useEffect(() => {
     if (isOwner) {
@@ -154,7 +155,7 @@ export default function Settings() {
           <div className="flex-1">
             <p className="font-semibold">{space}</p>
             <p className="text-xs text-ink-faint">
-              {isOwner ? '主人 · GitHub 登录' : '访客'} · 数据存于私有仓库的 data/{space}/ 文件夹
+              {isOwner ? '主人 · GitHub 登录' : '访客'}
             </p>
           </div>
         </div>
@@ -185,7 +186,7 @@ export default function Settings() {
         <div className="grid grid-cols-2 gap-2.5">
           {THEMES.map((t) => {
             const active = theme === t.id
-            const swatch = t.id === 'normal' && customAccent ? customAccent : t.swatch
+            const swatch = (t.id === 'normal' || t.id === 'glass') && customAccent ? customAccent : t.swatch
             return (
               <button
                 key={t.id}
@@ -254,13 +255,13 @@ export default function Settings() {
           </div>
         </div>
 
-        {theme === 'normal' && (
+        {(theme === 'normal' || theme === 'glass') && (
           <div className="mt-3 border-t border-line pt-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-medium text-ink-soft">自定义配色</p>
               {customAccent && (
                 <button onClick={() => setCustomAccent(null)} className="text-xs text-accent-ink">
-                  重置为清透冰蓝
+                  {theme === 'glass' ? '重置为静谧靛蓝' : '重置为清透冰蓝'}
                 </button>
               )}
             </div>
@@ -271,7 +272,7 @@ export default function Settings() {
                   onClick={() => setCustomAccent(c)}
                   aria-label={`配色 ${c}`}
                   className={`size-8 rounded-full border-2 transition ${
-                    (customAccent ?? '#0ea5e9').toLowerCase() === c ? 'scale-110 border-ink' : 'border-transparent'
+                    (customAccent ?? defaultAccent).toLowerCase() === c ? 'scale-110 border-ink' : 'border-transparent'
                   }`}
                   style={{ background: c }}
                 />
@@ -283,7 +284,7 @@ export default function Settings() {
                 <Palette size={14} />
                 <input
                   type="color"
-                  value={customAccent ?? '#0ea5e9'}
+                  value={customAccent ?? defaultAccent}
                   onChange={(e) => setCustomAccent(e.target.value)}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />

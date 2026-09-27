@@ -39,7 +39,7 @@ export default function App() {
     root.style.setProperty('--radius-scale', String(radiusScale))
     const meta = document.querySelector('meta[name="theme-color"]')
 
-    if (theme === 'normal' && customAccent) {
+    if ((theme === 'normal' || theme === 'glass') && customAccent) {
       const p = deriveAccent(customAccent)
       root.style.setProperty('--accent', p.accent)
       root.style.setProperty('--accent-2', p.accent2)
