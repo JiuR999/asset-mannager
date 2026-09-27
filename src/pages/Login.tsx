@@ -39,7 +39,7 @@ export default function Login() {
           <Citrus size={40} />
         </div>
         <h1 className="text-2xl font-bold">彦豆小库</h1>
-        <p className="mt-1 text-sm text-ink-faint">颜彦彦 × 张豆豆 的小账本</p>
+        <p className="mt-1 text-sm text-ink-faint">颜彦彦 × 张豆豆 的小库</p>
       </div>
 
       <div className="w-full max-w-xs space-y-4">

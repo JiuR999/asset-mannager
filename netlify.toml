@@ -7,6 +7,7 @@
   NODE_VERSION = "22"
 
 [dev]
+  framework = "#custom"
   command = "npm run dev"
   targetPort = 5173
   autoLaunch = false
