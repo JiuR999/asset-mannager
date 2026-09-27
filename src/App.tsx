@@ -4,7 +4,7 @@ import { LoaderCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from './store/auth'
 import { useData } from './store/data'
 import { useTheme, type ThemeId } from './store/theme'
-import { deriveAccent } from './lib/color'
+import { deriveAccent, deriveGlassBg } from './lib/color'
 import { toast } from './store/toast'
 import type { Identity } from './types'
 import Toasts from './components/Toasts'
@@ -20,6 +20,7 @@ const Stats = lazy(() => import('./pages/Stats'))
 const THEME_META: Record<ThemeId, string> = {
   normal: '#0ea5e9',
   glass: '#6366f1',
+  liquid: '#6366f1',
   swiss: '#0f172a',
   biophilic: '#3f9d78',
   softmed: '#0891b2',
@@ -27,6 +28,9 @@ const THEME_META: Record<ThemeId, string> = {
 }
 
 const ACCENT_VARS = ['--accent', '--accent-2', '--accent-soft', '--accent-ink', '--hero-from', '--hero-to']
+
+/** 玻璃背景渐变变量（玻璃拟态 / 液态玻璃主题自定义配色时派生） */
+const GLASS_BG_VARS = ['--glass-blob-1', '--glass-blob-2', '--glass-blob-3', '--glass-base-1', '--glass-base-2']
 
 export default function App() {
   const theme = useTheme((s) => s.theme)
@@ -39,7 +43,7 @@ export default function App() {
     root.style.setProperty('--radius-scale', String(radiusScale))
     const meta = document.querySelector('meta[name="theme-color"]')
 
-    if ((theme === 'normal' || theme === 'glass') && customAccent) {
+    if ((theme === 'normal' || theme === 'glass' || theme === 'liquid') && customAccent) {
       const p = deriveAccent(customAccent)
       root.style.setProperty('--accent', p.accent)
       root.style.setProperty('--accent-2', p.accent2)
@@ -47,9 +51,20 @@ export default function App() {
       root.style.setProperty('--accent-ink', p.accentInk)
       root.style.setProperty('--hero-from', p.heroFrom)
       root.style.setProperty('--hero-to', p.heroTo)
+      if (theme === 'glass' || theme === 'liquid') {
+        const bg = deriveGlassBg(customAccent)
+        root.style.setProperty('--glass-blob-1', bg.blob1)
+        root.style.setProperty('--glass-blob-2', bg.blob2)
+        root.style.setProperty('--glass-blob-3', bg.blob3)
+        root.style.setProperty('--glass-base-1', bg.base1)
+        root.style.setProperty('--glass-base-2', bg.base2)
+      } else {
+        GLASS_BG_VARS.forEach((v) => root.style.removeProperty(v))
+      }
       meta?.setAttribute('content', p.accent)
     } else {
       ACCENT_VARS.forEach((v) => root.style.removeProperty(v))
+      GLASS_BG_VARS.forEach((v) => root.style.removeProperty(v))
       meta?.setAttribute('content', THEME_META[theme] ?? THEME_META.normal)
     }
   }, [theme, customAccent, radiusScale])

@@ -13,6 +13,7 @@ import type { Category, GuestUser } from '../types'
 const THEMES: { id: ThemeId; label: string; desc: string; swatch: string }[] = [
   { id: 'normal', label: '普通', desc: '清透冰蓝', swatch: '#0ea5e9' },
   { id: 'glass', label: '玻璃拟态', desc: '磨砂玻璃', swatch: '#6366f1' },
+  { id: 'liquid', label: '液态玻璃', desc: '全页液态玻璃', swatch: '#6366f1' },
   { id: 'swiss', label: '瑞士极简', desc: '黑白克制', swatch: '#0f172a' },
   { id: 'biophilic', label: '亲自然', desc: '青苔绿意', swatch: '#3f9d78' },
   { id: 'softmed', label: '舒缓青碧', desc: '柔和医健', swatch: '#0891b2' },
@@ -61,7 +62,7 @@ export default function Settings() {
   const [savingUser, setSavingUser] = useState(false)
 
   const isOwner = identity.mode === 'owner'
-  const defaultAccent = theme === 'glass' ? '#6366f1' : '#0ea5e9'
+  const defaultAccent = theme === 'normal' ? '#0ea5e9' : '#6366f1'
 
   useEffect(() => {
     if (isOwner) {
@@ -186,7 +187,7 @@ export default function Settings() {
         <div className="grid grid-cols-2 gap-2.5">
           {THEMES.map((t) => {
             const active = theme === t.id
-            const swatch = (t.id === 'normal' || t.id === 'glass') && customAccent ? customAccent : t.swatch
+            const swatch = (t.id === 'normal' || t.id === 'glass' || t.id === 'liquid') && customAccent ? customAccent : t.swatch
             return (
               <button
                 key={t.id}
@@ -255,13 +256,13 @@ export default function Settings() {
           </div>
         </div>
 
-        {(theme === 'normal' || theme === 'glass') && (
+        {(theme === 'normal' || theme === 'glass' || theme === 'liquid') && (
           <div className="mt-3 border-t border-line pt-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-medium text-ink-soft">自定义配色</p>
               {customAccent && (
                 <button onClick={() => setCustomAccent(null)} className="text-xs text-accent-ink">
-                  {theme === 'glass' ? '重置为静谧靛蓝' : '重置为清透冰蓝'}
+                  {theme === 'normal' ? '重置为清透冰蓝' : '重置为静谧靛蓝'}
                 </button>
               )}
             </div>

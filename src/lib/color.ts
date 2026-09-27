@@ -150,8 +150,8 @@ function spreadFromHue(h: number, s: number, l: number): string[] {
 }
 
 export function chartPalette(theme: ThemeId, customAccent: string | null): string[] {
-  if (theme === 'normal' || theme === 'glass') {
-    const fallback = theme === 'glass' ? '#6366f1' : '#0284c7'
+  if (theme === 'normal' || theme === 'glass' || theme === 'liquid') {
+    const fallback = theme === 'normal' ? '#0284c7' : '#6366f1'
     const [r, g, b] = hexToRgb(customAccent ?? fallback)
     const [h, s, l] = rgbToHsl(r, g, b)
     return spreadFromHue(h, s, l)
@@ -160,4 +160,31 @@ export function chartPalette(theme: ThemeId, customAccent: string | null): strin
   if (theme === 'softmed') return SOFTMED_PALETTE
   if (theme === 'epaper') return EPAPER_PALETTE
   return BIOPHILIC_PALETTE
+}
+
+/** 由主色派生玻璃背景渐变的光斑色与底色（玻璃拟态 / 液态玻璃自定义配色时使用） */
+export function deriveGlassBg(hex: string): {
+  blob1: string
+  blob2: string
+  blob3: string
+  base1: string
+  base2: string
+} {
+  const [r, g, b] = hexToRgb(hex)
+  const [h, s, l] = rgbToHsl(r, g, b)
+  const blob = (hOff: number, lOff: number, a: number): string => {
+    const [cr, cg, cb] = hslToRgb((h + hOff + 360) % 360, clamp(s * 0.9, 0.35, 0.85), clamp(l + lOff, 0.45, 0.75))
+    return `rgba(${cr}, ${cg}, ${cb}, ${a})`
+  }
+  const base = (hOff: number): string => {
+    const [cr, cg, cb] = hslToRgb((h + hOff + 360) % 360, clamp(s * 0.45, 0.15, 0.5), 0.95)
+    return rgbToHex(cr, cg, cb)
+  }
+  return {
+    blob1: blob(0, 0.04, 0.5),
+    blob2: blob(40, 0.1, 0.45),
+    blob3: blob(-30, 0, 0.35),
+    base1: base(-8),
+    base2: base(14),
+  }
 }

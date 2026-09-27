@@ -1,14 +1,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type ThemeId = 'normal' | 'glass' | 'swiss' | 'biophilic' | 'softmed' | 'epaper'
+export type ThemeId = 'normal' | 'glass' | 'liquid' | 'swiss' | 'biophilic' | 'softmed' | 'epaper'
 
 /** 底部导航实现：css = 纯 CSS 弹簧拖拽版，webgl = 液态玻璃高光版 */
 export type NavStyle = 'css' | 'webgl'
 
 interface ThemeState {
   theme: ThemeId
-  /** 「普通」主题下的自定义主色（null = 默认清透冰蓝） */
+  /** 「普通 / 玻璃拟态 / 液态玻璃」主题的自定义主色（null = 各自默认色） */
   customAccent: string | null
   navStyle: NavStyle
   /** 全局圆角缩放倍数（1 = 主题默认） */

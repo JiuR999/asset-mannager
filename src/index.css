@@ -68,6 +68,27 @@
   --radius-base-3xl: 1.75rem;
 }
 
+/* 液态玻璃：全页轻量液态玻璃材质 */
+[data-theme="liquid"] {
+  --bg: #dbeafe;
+  --surface: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.4);
+  --line: rgba(255, 255, 255, 0.65);
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --ink-faint: #64748b;
+  --accent: #2563eb;
+  --accent-2: #1d4ed8;
+  --accent-soft: rgba(255, 255, 255, 0.55);
+  --accent-ink: #1d4ed8;
+  --hero-from: #6366f1;
+  --hero-to: #0ea5e9;
+  --danger: #e11d48;
+  --danger-soft: rgba(225, 29, 72, 0.12);
+  --radius-base-2xl: 1.25rem;
+  --radius-base-3xl: 1.75rem;
+}
+
 /* 极简瑞士 */
 [data-theme="swiss"] {
   --bg: #ffffff;
@@ -200,25 +221,33 @@ body {
   }
 }
 
-/* 玻璃拟态：冷色渐变背景 + 磨砂卡片 */
-[data-theme="glass"] body {
+/* 玻璃拟态 / 液态玻璃：冷色渐变背景（自定义配色时由 --glass-blob-* / --glass-base-* 覆盖） */
+[data-theme="glass"] body,
+[data-theme="liquid"] body {
   background:
-    radial-gradient(55% 50% at 12% 8%, rgba(129, 140, 248, 0.5), transparent 60%),
-    radial-gradient(50% 45% at 92% 0%, rgba(56, 189, 248, 0.45), transparent 60%),
-    radial-gradient(60% 55% at 82% 100%, rgba(45, 212, 191, 0.35), transparent 62%),
-    linear-gradient(160deg, #e0f2fe, #eef2ff);
+    radial-gradient(55% 50% at 12% 8%, var(--glass-blob-1, rgba(129, 140, 248, 0.5)), transparent 60%),
+    radial-gradient(50% 45% at 92% 0%, var(--glass-blob-2, rgba(56, 189, 248, 0.45)), transparent 60%),
+    radial-gradient(60% 55% at 82% 100%, var(--glass-blob-3, rgba(45, 212, 191, 0.35)), transparent 62%),
+    linear-gradient(160deg, var(--glass-base-1, #e0f2fe), var(--glass-base-2, #eef2ff));
   background-attachment: fixed;
 }
 
-/* 玻璃拟态：全页液态玻璃材质（与 LiquidGlassNav 容器层配方一致） */
-[data-theme="glass"] [class*="bg-surface"] {
-  background-color: color-mix(in srgb, var(--surface) 65%, transparent);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
+/* 玻璃拟态：磨砂卡片（原样式） */
+[data-theme="glass"] [class~="bg-surface"],
+[data-theme="glass"] [class~="bg-surface-2"] {
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+/* 液态玻璃：全页轻量液态玻璃材质（导航栏同源配方，阴影更轻更透） */
+[data-theme="liquid"] [class*="bg-surface"] {
+  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    0 4px 20px rgba(15, 23, 42, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 /* 舒缓青碧：柔和双层阴影（Soft UI Evolution 语义） */
