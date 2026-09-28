@@ -1,3 +1,4 @@
+import { ProxyAgent, fetch as undiciFetch } from 'undici'
 import type { Config, Context } from '@netlify/functions'
 
 /**
@@ -57,6 +58,25 @@ const json = (body: unknown, status = 200): Response =>
 
 const env = (name: string): string | undefined => process.env[name]
 
+/**
+ * 本地开发时 GitHub API 可能被网络阻断，配置了 HTTPS_PROXY / HTTP_PROXY 环境变量
+ * （netlify dev 会自动加载项目根目录 .env）则所有 GitHub 请求走代理；
+ * Netlify 线上未配置该变量 → dispatcher 为 undefined，行为与直连一致。
+ */
+const PROXY_URL = env('HTTPS_PROXY') ?? env('HTTP_PROXY') ?? env('https_proxy') ?? env('http_proxy')
+const dispatcher = PROXY_URL ? new ProxyAgent(PROXY_URL) : undefined
+
+interface GhInit {
+  method?: string
+  headers?: Record<string, string>
+  body?: string
+}
+
+async function ghFetch(url: string, init?: GhInit): Promise<Response> {
+  const res = await undiciFetch(url, { ...init, dispatcher })
+  return res as unknown as Response
+}
+
 function repoName(): string | null {
   const r = env('DATA_REPO')
   return r && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(r) ? r : null
@@ -113,8 +133,12 @@ const ghHeaders = (token: string, extra?: Record<string, string>): Record<string
   ...extra,
 })
 
-async function gh(token: string, path: string, init?: RequestInit): Promise<Response> {
-  return fetch(GH + path, { ...init, headers: { ...ghHeaders(token), ...(init?.headers as Record<string, string>) } })
+async function gh(token: string, path: string, init?: GhInit): Promise<Response> {
+  return ghFetch(GH + path, {
+    method: init?.method,
+    body: init?.body,
+    headers: { ...ghHeaders(token), ...init?.headers },
+  })
 }
 
 function contentsBase(user?: string): string {
@@ -151,7 +175,7 @@ async function handleAuth(req: Request): Promise<Response> {
   const body = (await req.json().catch(() => null)) as { code?: string } | null
   if (!body?.code) return json({ error: '参数错误' }, 400)
 
-  const tr = await fetch('https://github.com/login/oauth/access_token', {
+  const tr = await ghFetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
     headers: { 'content-type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code: body.code }),
