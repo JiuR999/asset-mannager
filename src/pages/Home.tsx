@@ -67,7 +67,7 @@ export default function Home() {
       </div>
 
       {/* 在用 / 已退役 */}
-      <div className="mt-4 flex gap-1 rounded-xl bg-surface-2 p-1 text-sm">
+      <div className="paper-tabs mt-4 flex gap-1 rounded-xl bg-surface-2 p-1 text-sm">
         {(
           [
             ['active', `在用 (${active.length})`],
@@ -86,7 +86,7 @@ export default function Home() {
 
       {/* 搜索 + 排序 */}
       <div className="mt-3 flex gap-2">
-        <div className="flex flex-1 items-center gap-2 rounded-xl bg-surface px-3 shadow-sm">
+        <div className="paper-line flex flex-1 items-center gap-2 rounded-xl bg-surface px-3 shadow-sm">
           <Search size={16} className="shrink-0 text-ink-faint" />
           <input
             value={query}
@@ -98,7 +98,7 @@ export default function Home() {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as Sort)}
-          className="rounded-xl bg-surface px-2 text-xs text-ink-soft shadow-sm outline-none"
+          className="paper-line rounded-xl bg-surface px-2 text-xs text-ink-soft shadow-sm outline-none"
         >
           <option value="daily">按日均</option>
           <option value="price">按金额</option>
@@ -166,7 +166,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${active ? 'bg-accent text-white' : 'bg-surface text-ink-soft shadow-sm'
+      className={`paper-chip shrink-0 rounded-full px-3 py-1.5 text-xs transition ${active ? 'bg-accent text-white' : 'bg-surface text-ink-soft shadow-sm'
         }`}
     >
       {children}

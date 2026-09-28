@@ -304,10 +304,52 @@ body {
   box-shadow: inset 0 0 0 1px var(--line);
 }
 
-/* 电子纸 Pro：总览卡改为墨字扉页（纸色跟随所选背景） */
+/* 电子纸 Pro：分段控件「书写线」化（去框：墨线页签，需在轻纸片规则之后） */
+[data-theme="epaper-pro"] .paper-tabs {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  gap: 0;
+}
+
+[data-theme="epaper-pro"] .paper-tabs > button {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-faint);
+}
+
+[data-theme="epaper-pro"] .paper-tabs > button[class~="bg-surface"] {
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* 电子纸 Pro：搜索框 / 排序去框，只留纸面书写线 */
+[data-theme="epaper-pro"] .paper-line {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* 电子纸 Pro：分类词条，未选中为纯文字，选中保留土黄实底印章 */
+[data-theme="epaper-pro"] .paper-chip {
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink-faint);
+}
+
+[data-theme="epaper-pro"] .paper-chip:not([class~="bg-accent"]):hover {
+  background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
+}
+
+/* 电子纸 Pro：总览卡完全融入纸面（无底无框，大墨字直接印在纸上） */
 [data-theme="epaper-pro"] [class~="from-hero-from"] {
-  background: color-mix(in srgb, var(--bg) 55%, var(--surface-2));
-  box-shadow: inset 0 0 0 1px var(--line);
+  background: transparent;
+  box-shadow: none;
   color: var(--ink);
 }
 

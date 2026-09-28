@@ -95,7 +95,7 @@ export default function Stats() {
       </header>
 
       {/* 范围切换 */}
-      <div className="flex gap-1 rounded-xl bg-surface-2 p-1 text-sm">
+      <div className="paper-tabs flex gap-1 rounded-xl bg-surface-2 p-1 text-sm">
         {(
           [
             ['all', '全部'],
