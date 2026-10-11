@@ -77,7 +77,7 @@ function WebGLNav({ navigate, activeTo }: { navigate: (to: string) => void; acti
 }
 
 const PILL =
-  'pointer-events-auto touch-pan-y mb-4 flex items-center gap-1 rounded-full border border-line bg-surface/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl'
+  'relative pointer-events-auto touch-pan-y mb-4 flex items-center gap-1 rounded-full border border-line bg-surface/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl'
 
 function CssNav({ navigate, activeIndex }: { navigate: (to: string) => void; activeIndex: number }) {
   const parentRef = useRef<HTMLDivElement>(null)
@@ -98,14 +98,20 @@ function CssNav({ navigate, activeIndex }: { navigate: (to: string) => void; act
       const a = itemRefs.current[0]
       const b = itemRefs.current[1]
       if (!parent || !a || !b) return
+      if (parent.offsetWidth === 0 || a.offsetWidth === 0) return
       const pa = parent.getBoundingClientRect()
       const ra = a.getBoundingClientRect()
       const rb = b.getBoundingClientRect()
       setGeom({ left: ra.left - pa.left, width: ra.width, step: rb.left - ra.left })
     }
     measure()
+    const ro = new ResizeObserver(measure)
+    if (parentRef.current) ro.observe(parentRef.current)
     window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
+    }
   }, [])
 
   const clampDrag = (dx: number): number => {
