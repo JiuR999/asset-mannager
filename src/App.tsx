@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router'
 import { LoaderCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from './store/auth'
+import { toSavedAccount, useAccounts } from './store/accounts'
 import { useData } from './store/data'
 import { useTheme, type ThemeId } from './store/theme'
 import { deriveAccent, deriveGlassBg } from './lib/color'
@@ -111,6 +112,8 @@ function Shell({ identity }: { identity: Identity }) {
   const isOwner = identity.mode === 'owner'
 
   useEffect(() => {
+    // 当前身份统一同步进本机账号缓存（登录 / OAuth / 切换 / 存量用户共用此入口）
+    useAccounts.getState().upsert(toSavedAccount(identity))
     load(identity.name)
   }, [identity, load])
 

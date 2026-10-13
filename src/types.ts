@@ -27,6 +27,8 @@ export interface Db {
   updatedAt: string
   categories: Category[]
   assets: Asset[]
+  /** 账号资料（头像指针随仓库同步，跨设备恢复） */
+  profile?: { avatar?: string | null }
 }
 
 export type Identity = {
@@ -41,4 +43,15 @@ export interface GuestUser {
   name: string
   code: string
   label?: string
+}
+
+/** 已验证并保存在本机的账号（点击即切换；avatar 为本地缓存的头像路径） */
+export interface SavedAccount {
+  mode: 'owner' | 'visitor'
+  /** GitHub 登录名（owner）或访客名（visitor），同时作为数据文件夹名 */
+  name: string
+  token: string
+  label?: string
+  avatar?: string
+  savedAt: string
 }

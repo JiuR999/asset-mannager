@@ -21,6 +21,28 @@ export async function compressImage(file: File): Promise<Blob> {
   throw new Error('图片压缩失败')
 }
 
+/** 压缩头像：居中裁正方形 → 256×256，输出 WebP（不支持时退回 JPEG） */
+export async function compressAvatar(file: File): Promise<Blob> {
+  const bitmap = await loadBitmap(file)
+  const side = Math.min(bitmap.width, bitmap.height)
+  const sx = (bitmap.width - side) / 2
+  const sy = (bitmap.height - side) / 2
+
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 256
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('无法创建画布')
+  ctx.drawImage(bitmap as CanvasImageSource, sx, sy, side, side, 0, 0, 256, 256)
+  if ('close' in bitmap && typeof bitmap.close === 'function') bitmap.close()
+
+  const webp = await toBlob(canvas, 'image/webp', 0.85)
+  if (webp) return webp
+  const jpeg = await toBlob(canvas, 'image/jpeg', 0.9)
+  if (jpeg) return jpeg
+  throw new Error('图片压缩失败')
+}
+
 async function loadBitmap(file: File): Promise<ImageBitmap | HTMLImageElement> {
   try {
     return await createImageBitmap(file)

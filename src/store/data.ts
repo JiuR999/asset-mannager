@@ -3,6 +3,7 @@ import { api, ApiError } from '../lib/client'
 import { blobToBase64, compressImage, imageFileName } from '../lib/image'
 import { DEFAULT_CATEGORIES } from '../lib/icons'
 import { useAuth } from './auth'
+import { useAccounts } from './accounts'
 import { toast } from './toast'
 import type { Asset, Category, Db, GuestUser } from '../types'
 
@@ -48,6 +49,8 @@ interface DataState {
   removeAsset: (id: string) => Promise<void>
   upsertCategory: (c: Category) => Promise<void>
   removeCategory: (id: string) => Promise<void>
+  /** 更新当前登录账号的头像指针（null = 移除），并同步本机账号缓存 */
+  saveProfile: (avatar: string | null) => Promise<void>
   reset: () => void
 }
 
@@ -90,9 +93,17 @@ export const useData = create<DataState>((set, get) => ({
         db = r.db
       }
       set({ status: 'ready', repoReady: true, db, sha, sync: 'synced' })
+      // 头像回灌：查看自己账号的空间时，把仓库里的头像指针同步到本机缓存
+      const identity = useAuth.getState().identity
+      if (identity && s === identity.name) {
+        const remote = db.profile?.avatar ?? null
+        const cached = useAccounts.getState().accounts.find((a) => a.name === identity.name)?.avatar
+        if ((cached ?? null) !== (remote ?? null)) useAccounts.getState().setAvatar(identity.name, remote)
+      }
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) {
         useAuth.getState().logout()
+        useAccounts.getState().remove(s)
         toast('登录已失效，请重新登录', 'error')
         return
       }
@@ -225,6 +236,37 @@ export const useData = create<DataState>((set, get) => ({
     try {
       const r = await persistDb(next, get().sha, space)
       set({ db: r.db, sha: r.sha, sync: 'synced' })
+    } catch (e) {
+      set({ sync: 'error' })
+      throw e
+    }
+  },
+
+  saveProfile: async (avatar) => {
+    const identity = useAuth.getState().identity
+    if (!identity) throw new Error('未登录')
+    const { space } = get()
+    set({ sync: 'saving' })
+    try {
+      if (space === identity.name) {
+        // 正查看自己账号的空间：复用本地 db/sha 直接写入
+        const next: Db = { ...get().db, profile: { ...get().db.profile, avatar } }
+        const r = await persistDb(next, get().sha, identity.name)
+        set({ db: r.db, sha: r.sha, sync: 'synced' })
+      } else {
+        // 主人正查看他人空间：独立读写自己的 assets.json，不影响当前加载的数据
+        const cur = await api<{ repo: boolean; sha: string | null; data: Db | null }>(
+          `/api/data?user=${encodeURIComponent(identity.name)}`,
+        )
+        if (!cur.repo || !cur.data) throw new Error('自己的数据仓库还未初始化')
+        const next: Db = { ...cur.data, profile: { ...cur.data.profile, avatar } }
+        await api(`/api/data?user=${encodeURIComponent(identity.name)}`, {
+          method: 'PUT',
+          json: { data: next, sha: cur.sha },
+        })
+        set({ sync: 'synced' })
+      }
+      useAccounts.getState().setAvatar(identity.name, avatar)
     } catch (e) {
       set({ sync: 'error' })
       throw e

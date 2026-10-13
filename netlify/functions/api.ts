@@ -4,6 +4,7 @@ import type { Config, Context } from '@netlify/functions'
 /**
  * 统一后端代理（无自建服务器，跑在 Netlify Functions 免费额度内）：
  *   POST   /api/auth    GitHub OAuth code 换 token（client secret 只在服务端）
+ *   POST   /api/verify  校验访客名 + 访客码（添加账号前验证，公开无需登录）
  *   GET    /api/data    读取 assets.json（含 sha 用于并发控制）
  *   PUT    /api/data    写入 assets.json（冲突时服务端按 updatedAt 自动合并）
  *   GET    /api/image   读取私有仓库图片（内容哈希文件名，可无限缓存）
@@ -43,6 +44,7 @@ interface Db {
   updatedAt: string
   categories: Category[]
   assets: Asset[]
+  profile?: { avatar?: string | null }
 }
 interface UserEntry {
   name: string
@@ -99,30 +101,37 @@ async function parseAuth(req: Request): Promise<{ auth?: Auth; error?: string }>
     const code = i > 0 ? rest.slice(i + 1) : ''
     if (!name) return { error: '访客名或访客码错误' }
 
-    const serverToken = env('GITHUB_TOKEN')
-    if (!serverToken) return { error: '服务端未配置 GITHUB_TOKEN，请联系主人完成设置' }
-
-    // 1) 环境变量 USER_CODES
-    const map = new Map<string, string>()
-    for (const pair of (env('USER_CODES') ?? '').split(',')) {
-      const p = pair.indexOf(':')
-      if (p > 0) map.set(pair.slice(0, p).trim(), pair.slice(p + 1).trim())
-    }
-    if (map.get(name) === code) {
-      return { auth: { token: serverToken, mode: 'visitor', user: name } }
-    }
-
-    // 2) 仓库 users.json（主人可在 App 内直接维护，无需重新部署）
-    if (repoName()) {
-      const users = await readUsers(serverToken)
-      if (users.some((u) => u.name === name && u.code === code)) {
-        return { auth: { token: serverToken, mode: 'visitor', user: name } }
-      }
-    }
-    return { error: '访客名或访客码错误' }
+    const v = await checkVisitor(name, code)
+    if (v.ok) return { auth: { token: env('GITHUB_TOKEN')!, mode: 'visitor', user: name } }
+    return { error: v.error ?? '访客名或访客码错误' }
   }
 
   return { auth: { token, mode: 'owner' } }
+}
+
+/** 校验访客凭证：1) 环境变量 USER_CODES  2) 仓库 users.json（命中时带出昵称） */
+async function checkVisitor(
+  name: string,
+  code: string,
+): Promise<{ ok: true; label?: string } | { ok: false; error?: string }> {
+  const serverToken = env('GITHUB_TOKEN')
+  if (!serverToken) return { ok: false, error: '服务端未配置 GITHUB_TOKEN，请联系主人完成设置' }
+
+  // 1) 环境变量 USER_CODES
+  const map = new Map<string, string>()
+  for (const pair of (env('USER_CODES') ?? '').split(',')) {
+    const p = pair.indexOf(':')
+    if (p > 0) map.set(pair.slice(0, p).trim(), pair.slice(p + 1).trim())
+  }
+  if (map.get(name) === code) return { ok: true }
+
+  // 2) 仓库 users.json（主人可在 App 内直接维护，无需重新部署）
+  if (repoName()) {
+    const users = await readUsers(serverToken)
+    const u = users.find((x) => x.name === name && x.code === code)
+    if (u) return { ok: true, ...(u.label ? { label: u.label } : {}) }
+  }
+  return { ok: false }
 }
 
 const ghHeaders = (token: string, extra?: Record<string, string>): Record<string, string> => ({
@@ -164,6 +173,7 @@ function mergeDb(local: Db, remote: Db): Db {
     updatedAt: new Date().toISOString(),
     categories: byId<Category>(local?.categories, remote?.categories),
     assets: byId<Asset>(local?.assets, remote?.assets),
+    profile: local?.profile ?? remote?.profile,
   }
 }
 
@@ -187,6 +197,18 @@ async function handleAuth(req: Request): Promise<Response> {
   if (!ur.ok) return json({ error: '获取 GitHub 用户信息失败' }, 401)
   const uj = (await ur.json()) as { login?: string }
   return json({ token: tj.access_token, login: uj.login ?? '' })
+}
+
+/** 添加账号前验证访客凭证（公开：与登录尝试同等的暴露面，不泄露额外信息） */
+async function handleVerify(req: Request): Promise<Response> {
+  const body = (await req.json().catch(() => null)) as { name?: string; code?: string } | null
+  const name = typeof body?.name === 'string' ? body.name.trim() : ''
+  const code = typeof body?.code === 'string' ? body.code.trim() : ''
+  if (!validUser(name) || !code) return json({ error: '参数错误' }, 400)
+
+  const v = await checkVisitor(name, code)
+  if (!v.ok) return json({ error: v.error ?? '访客名或访客码错误' }, 401)
+  return json({ ok: true, ...(v.label ? { label: v.label } : {}) })
 }
 
 async function readData(token: string, user: string): Promise<Response> {
@@ -415,6 +437,7 @@ export default async (req: Request, _ctx: Context): Promise<Response> => {
   const { pathname } = new URL(req.url)
   try {
     if (req.method === 'POST' && pathname === '/api/auth') return await handleAuth(req)
+    if (req.method === 'POST' && pathname === '/api/verify') return await handleVerify(req)
 
     const { auth, error } = await parseAuth(req)
     if (!auth) return json({ error: error ?? '未登录' }, 401)

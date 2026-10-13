@@ -1,9 +1,14 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { CloudOff, Search } from 'lucide-react'
+import { useAuth } from '../store/auth'
+import { useAccounts } from '../store/accounts'
 import { useData } from '../store/data'
 import { useUi } from '../store/ui'
+import { useLongPress } from '../lib/useLongPress'
 import { dailyCost, fmtDaily, fmtMoney, totalDaily } from '../lib/cost'
 import AssetCard from '../components/AssetCard'
+import Avatar from '../components/Avatar'
+import AccountSwitcher from '../components/AccountSwitcher'
 
 type Tab = 'active' | 'retired'
 type Sort = 'daily' | 'price' | 'date'
@@ -14,11 +19,15 @@ export default function Home() {
   const sync = useData((s) => s.sync)
   const retrySync = useData((s) => s.retrySync)
   const openForm = useUi((s) => s.openForm)
+  const identity = useAuth((s) => s.identity)!
+  const currentAccount = useAccounts((s) => s.accounts.find((a) => a.name === identity.name))
 
   const [tab, setTab] = useState<Tab>('active')
   const [query, setQuery] = useState('')
   const [cat, setCat] = useState<string | null>(null)
   const [sort, setSort] = useState<Sort>('daily')
+  const [accountOpen, setAccountOpen] = useState(false)
+  const longPress = useLongPress(() => setAccountOpen(true))
 
   const active = useMemo(() => db.assets.filter((a) => !a.retiredAt), [db.assets])
   const sumDaily = useMemo(() => totalDaily(db.assets), [db.assets])
@@ -39,12 +48,25 @@ export default function Home() {
 
   return (
     <div className="mx-auto min-h-dvh max-w-2xl px-4 pb-28 pt-safe">
-      {/* 顶栏 */}
+      {/* 顶栏（头像 / 文字块：点击或长按呼出账号切换） */}
       <header className="flex items-center justify-between pb-3 pt-5">
-        <div>
-          <h1 className="text-lg font-bold">嗨，{identityName}</h1>
-          <p className="text-xs text-ink-faint">彦豆小库</p>
-        </div>
+        <button
+          onClick={() => setAccountOpen(true)}
+          {...longPress}
+          aria-label="切换账号"
+          className="-ml-1 flex items-center gap-2.5 rounded-2xl p-1 text-left active:scale-[0.98]"
+        >
+          <Avatar
+            name={identity.name}
+            avatar={currentAccount?.avatar}
+            isOwner={identity.mode === 'owner'}
+            size={40}
+          />
+          <div>
+            <h1 className="text-lg font-bold leading-tight">嗨，{identityName}</h1>
+            <p className="text-xs text-ink-faint">彦豆小库</p>
+          </div>
+        </button>
         <SyncBadge sync={sync} onRetry={retrySync} />
       </header>
 
@@ -139,6 +161,8 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {accountOpen && <AccountSwitcher onClose={() => setAccountOpen(false)} />}
     </div>
   )
 }
